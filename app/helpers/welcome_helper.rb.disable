@@ -1,0 +1,17 @@
+module WelcomeHelper
+  def resource_name
+    :duser
+  end
+
+  def resource
+    @resource ||= Duser.new
+  end
+	
+  def resource_class
+    devise_mapping.to
+  end
+  def devise_mapping
+    #@devise_mapping ||= request.env["devise.mapping"]
+    @devise_mapping ||= Devise.mappings[:duser]
+  end
+end

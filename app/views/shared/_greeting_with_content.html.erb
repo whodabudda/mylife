@@ -1,0 +1,29 @@
+
+   <%= render partial: "shared/navbar_default" %>
+   <div class="container">
+        <div class="row">
+          <div class="col-md-8">
+             <div class="jumbotron jumbotron_in_session" >
+            <h1>Capture <span class="em-text">Life</span></h1>
+            <p>An easy way to capture & share your vital numbers</p>
+            <h2>Welcome#greeting</h2>
+            <p>Find me in app/views/welcome/greeting.html.erb</p>
+
+             <%= image_tag "chart_bg2.png", class: "showcase-img" %> 
+           </div>          
+         </div>
+           <div class="col-md-4 auth_message">
+            <%= render partial: action_name %>
+            <%= show_params %>
+            <p> <%= request.path %> </p>
+            <p> <%= request.env['ORIGINAL_FULLPATH'] %> </p>
+            <% if devise_controller? %>
+              <p> This is a devise controller </p>
+            <%else%>
+              <p> This is NOT a devise controller </p>
+            <%end%>
+          </div>
+
+      </div>
+
+    </div>

@@ -1,0 +1,16 @@
+class CreateDusersRoles < ActiveRecord::Migration
+	def self.up
+		create_table :dusers_roles, :id => false do |t|
+			t.references :dusers
+			t.references :roles
+			t.timestamps null: false
+		end
+
+		add_index :dusers_roles, [:duser_id, :role_id]
+		add_index :dusers_roles, :duser_id
+	end
+
+	def self.down
+		drop_table :dusers_roles
+	end
+end

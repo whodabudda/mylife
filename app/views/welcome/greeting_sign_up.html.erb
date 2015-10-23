@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyLife BioCharting</title>
+  </head>
+
+  <body>
+    <%= render partial: "shared/navbar_default" %>
+    <%
+      @jclass = 'class="jumbotron'
+      if not duser_signed_in?
+        @jclass.concat(' jumbotron_in_session"') 
+      else
+         @jclass.concat('"')
+       end
+    %>
+   <div class="container">
+
+        <div class="row">
+          <div class="col-md-8">
+             <div <%== @jclass %> >
+            <h1>Capture <span class="em-text">Life</span></h1>
+            <p>An easy way to capture & share your vital numbers</p>
+            <h2>Welcome#greeting</h2>
+            <p>Find me in app/views/welcome/greeting.html.erb</p>
+
+             <%= image_tag "chart_bg2.png", class: "showcase-img" %> 
+           </div>          
+         </div>
+           <div class="col-md-4 auth_message">
+            
+            <%= render 'dusers/sessions/new' if duser_signed_in? == false %>
+            <%= show_params %>
+       
+       </div>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>
