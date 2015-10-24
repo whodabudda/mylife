@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @metric.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @metric.description %>
+</p>
+
+<p>
+  <strong>Duser:</strong>
+  <%= @metric.duser %>
+</p>
+
+<p>
+  <strong>Unit:</strong>
+  <%= @metric.unit %>
+</p>
+
+<%= link_to 'Edit', edit_metric_path(@metric) %> |
+<%= link_to 'Back', metrics_path %>

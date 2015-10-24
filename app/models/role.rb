@@ -1,3 +1,4 @@
 class Role < ActiveRecord::Base
-	has_and_belongs_to_many :dusers
+	has_many :dusers, :through => :duser_roles
+	has_many :duser_roles
 end

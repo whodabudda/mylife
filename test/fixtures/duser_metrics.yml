@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  value: 1
+  occur_dttm: 2015-10-23 19:59:34
+  duser_id: 
+  metric_id: 
+
+two:
+  value: 1
+  occur_dttm: 2015-10-23 19:59:34
+  duser_id: 
+  metric_id: 

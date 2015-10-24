@@ -1,5 +1,10 @@
 class Duser < ActiveRecord::Base
-	has_and_belongs_to_many :roles
+	has_many :roles , :through => :duser_roles
+	has_many :duser_roles
+	has_many :metrics , :through => :duser_metrics
+	has_many :duser_metrics
+	has_many :units
+
   	#before_create :set_default_role
 	before_save :check_username
 

@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resources :duser_metrics
+  resources :units
+  resources :metrics
   #devise_for :dusers, controllers: {
   #  sessions: "dusers/sessions"
  # }
