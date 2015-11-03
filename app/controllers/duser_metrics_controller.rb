@@ -21,6 +21,11 @@ class DuserMetricsController < ApplicationController
   def edit
   end
 
+  # create a HighStock chart from a users data
+  def chart
+    
+  end
+
   # POST /duser_metrics
   # POST /duser_metrics.json
   def create

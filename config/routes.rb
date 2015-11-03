@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   get 'user_session/define_event'
 
   get 'user_session/refresh'
+  get 'duser_metrics/chart'
 
   resources :duser_metrics
   resources :units
