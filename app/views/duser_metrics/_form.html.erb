@@ -21,11 +21,12 @@
   </div>
   <div class="field">
     <%= f.label :duser_id %><br>
-    <%= f.text_field :duser_id %>
+    <%= f.text_field :duser_id, value: current_duser.id, readonly: true%>
   </div>
   <div class="field">
     <%= f.label :metric_id %><br>
-    <%= f.text_field :metric_id %>
+    <% @m = Metric.where( " duser_id = 1 or duser_id = ?", current_duser.id ) %>
+    <%=f.collection_select(:metric_id, @m, :id, :name) %>
   </div>
   <div class="actions">
     <%= f.submit %>

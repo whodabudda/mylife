@@ -2,7 +2,7 @@ class WelcomeController < ApplicationController
   #before_action :authenticate_duser!
   def greeting
   	if duser_signed_in?
-  		render "home"
+  		render 'user_session/home'
   	end
   end
   def about

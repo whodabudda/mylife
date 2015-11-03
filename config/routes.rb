@@ -1,8 +1,22 @@
 Rails.application.routes.draw do
+  get 'user_session/home'
+
+  get 'user_session/add_metric'
+
+  get 'user_session/add_event'
+
+  get 'user_session/define_metric'
+
+  get 'user_session/define_event'
+
+  get 'user_session/refresh'
+
   resources :duser_metrics
   resources :units
   resources :metrics
-  #devise_for :dusers, controllers: {
+  #devise_for :dusers, contro
+  #get ':controller/:action/:occur_dttm/:duser_id/:metric_id'
+  #get "duser_metrics/:id" => "duser_metrics#show", :as => :duser_metrics
   #  sessions: "dusers/sessions"
  # }
 

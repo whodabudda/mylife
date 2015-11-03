@@ -13,11 +13,11 @@
 
 ActiveRecord::Schema.define(version: 20151024005934) do
 
-  create_table "duser_metrics", id: false, force: :cascade do |t|
-    t.integer  "value",      limit: 4
-    t.datetime "occur_dttm"
-    t.integer  "duser_id",   limit: 4
-    t.integer  "metric_id",  limit: 4
+  create_table "duser_metrics", force: :cascade do |t|
+    t.integer  "value",      limit: 4, null: false
+    t.datetime "occur_dttm",           null: false
+    t.integer  "duser_id",   limit: 4, null: false
+    t.integer  "metric_id",  limit: 4, null: false
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
   end
@@ -59,10 +59,10 @@ ActiveRecord::Schema.define(version: 20151024005934) do
   add_index "dusers", ["reset_password_token"], name: "index_dusers_on_reset_password_token", unique: true, using: :btree
 
   create_table "metrics", force: :cascade do |t|
-    t.string   "name",        limit: 255
+    t.string   "name",        limit: 255, null: false
     t.string   "description", limit: 255
-    t.integer  "duser_id",    limit: 4
-    t.integer  "unit_id",     limit: 4
+    t.integer  "duser_id",    limit: 4,   null: false
+    t.integer  "unit_id",     limit: 4,   null: false
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
   end
@@ -100,10 +100,6 @@ ActiveRecord::Schema.define(version: 20151024005934) do
 
   add_index "users", ["role_id"], name: "index_users_on_role_id", using: :btree
 
-  add_foreign_key "duser_metrics", "dusers"
-  add_foreign_key "duser_metrics", "metrics"
-  add_foreign_key "metrics", "dusers"
-  add_foreign_key "metrics", "units"
   add_foreign_key "units", "dusers"
   add_foreign_key "users", "roles"
 end

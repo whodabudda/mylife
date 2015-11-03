@@ -1,0 +1,23 @@
+
+    <div class="container">
+    	<div class="row" >
+      		<div class="col-md-12">
+	      		<!-- placeholder until actual chart data is included -->
+	             <%= image_tag "chart_bg2.png", class: "chart-img" %> 
+      		</div>
+        </div>
+    </div>
+    <div class="container">
+    	<div class="row">
+    		<div class="col-md-12"> 
+    			<div class="newchartbutton">
+            <% Metric.select(:id).where( " duser_id = 1 or duser_id = ?", current_duser.id ) %>
+            <%= button_to "New Metric", new_duser_metric_path, method: :get %>
+            <!-- Single button -->
+            <h2>UserSession#home</h2>
+            <p>Find me in app/views/user_session/home.html.erb</p>
+            <!-- <p> <%=show_params%> </p> -->
+          </div>
+      	</div>
+      </div>
+    </div>
