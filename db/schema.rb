@@ -1,105 +1,129 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# Note that this schema.rb definition is the authoritative source for your
-# database schema. If you need to create the application database on another
-# system, you should be using db:schema:load, not running all the migrations
-# from scratch. The latter is a flawed and unsustainable approach (the more migrations
-# you'll amass, the slower it'll run and the greater likelihood for issues).
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151024005934) do
+ActiveRecord::Schema.define(version: 2021_02_21_172657) do
 
-  create_table "duser_metrics", force: :cascade do |t|
-    t.integer  "value",      limit: 4, null: false
-    t.datetime "occur_dttm",           null: false
-    t.integer  "duser_id",   limit: 4, null: false
-    t.integer  "metric_id",  limit: 4, null: false
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+  create_table "active_storage_attachments", charset: "latin1", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
-  add_index "duser_metrics", ["duser_id"], name: "index_duser_metrics_on_duser_id", using: :btree
-  add_index "duser_metrics", ["metric_id"], name: "index_duser_metrics_on_metric_id", using: :btree
-
-  create_table "duser_roles", id: false, force: :cascade do |t|
-    t.integer  "duser_id",   limit: 4, null: false
-    t.integer  "role_id",    limit: 4, null: false
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+  create_table "active_storage_blobs", charset: "latin1", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum", null: false
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
-  add_index "duser_roles", ["duser_id", "role_id"], name: "index_dusers_roles_on_dusers_id_and_roles_id", using: :btree
-  add_index "duser_roles", ["duser_id"], name: "index_dusers_roles_on_dusers_id", using: :btree
+  create_table "active_storage_variant_records", charset: "latin1", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
-  create_table "dusers", force: :cascade do |t|
-    t.string   "email",                  limit: 255, default: "", null: false
-    t.string   "encrypted_password",     limit: 255, default: "", null: false
-    t.string   "reset_password_token",   limit: 255
+  create_table "duser_metrics", id: :integer, charset: "latin1", force: :cascade do |t|
+    t.integer "value", null: false
+    t.datetime "occur_dttm", null: false
+    t.integer "duser_id", null: false
+    t.integer "metric_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["duser_id"], name: "index_duser_metrics_on_duser_id"
+    t.index ["metric_id"], name: "index_duser_metrics_on_metric_id"
+  end
+
+  create_table "duser_roles", id: false, charset: "latin1", force: :cascade do |t|
+    t.integer "duser_id", null: false
+    t.integer "role_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["duser_id", "role_id"], name: "index_dusers_roles_on_dusers_id_and_roles_id"
+    t.index ["duser_id"], name: "index_dusers_roles_on_dusers_id"
+  end
+
+  create_table "dusers", id: :integer, charset: "latin1", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          limit: 4,   default: 0,  null: false
+    t.integer "sign_in_count", default: 0, null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip",     limit: 255
-    t.string   "last_sign_in_ip",        limit: 255
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
-    t.string   "username",               limit: 255,              null: false
-    t.date     "birthdate",                                       null: false
-    t.integer  "failed_attempts",        limit: 4,   default: 0,  null: false
-    t.string   "unlock_token",           limit: 255
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "username", null: false
+    t.date "birthdate", null: false
+    t.integer "failed_attempts", default: 0, null: false
+    t.string "unlock_token"
     t.datetime "locked_at"
+    t.index ["email"], name: "index_dusers_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_dusers_on_reset_password_token", unique: true
   end
 
-  add_index "dusers", ["email"], name: "index_dusers_on_email", unique: true, using: :btree
-  add_index "dusers", ["reset_password_token"], name: "index_dusers_on_reset_password_token", unique: true, using: :btree
-
-  create_table "metrics", force: :cascade do |t|
-    t.string   "name",        limit: 255, null: false
-    t.string   "description", limit: 255
-    t.integer  "duser_id",    limit: 4,   null: false
-    t.integer  "unit_id",     limit: 4,   null: false
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+  create_table "metrics", id: :integer, charset: "latin1", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "description"
+    t.integer "duser_id", null: false
+    t.integer "unit_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "series_color"
+    t.index ["duser_id"], name: "index_metrics_on_duser_id"
+    t.index ["unit_id"], name: "index_metrics_on_unit_id"
   end
 
-  add_index "metrics", ["duser_id"], name: "index_metrics_on_duser_id", using: :btree
-  add_index "metrics", ["unit_id"], name: "index_metrics_on_unit_id", using: :btree
-
-  create_table "roles", force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+  create_table "roles", id: :integer, charset: "latin1", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table "units", force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.string   "displ_name", limit: 255
-    t.integer  "duser_id",   limit: 4
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+  create_table "units", id: :integer, charset: "latin1", force: :cascade do |t|
+    t.string "name"
+    t.string "displ_name"
+    t.integer "duser_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["duser_id"], name: "index_units_on_duser_id"
   end
 
-  add_index "units", ["duser_id"], name: "index_units_on_duser_id", using: :btree
-
-  create_table "users", force: :cascade do |t|
-    t.string   "first_name",      limit: 30,  null: false
-    t.string   "last_name",       limit: 50,  null: false
-    t.date     "birthdate"
-    t.string   "password_digest", limit: 255
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
-    t.string   "email",           limit: 255, null: false
-    t.string   "username",        limit: 255, null: false
-    t.integer  "role_id",         limit: 4
+  create_table "users", id: :integer, charset: "latin1", force: :cascade do |t|
+    t.string "first_name", limit: 30, null: false
+    t.string "last_name", limit: 50, null: false
+    t.date "birthdate"
+    t.string "password_digest"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "email", null: false
+    t.string "username", null: false
+    t.integer "role_id"
+    t.index ["role_id"], name: "index_users_on_role_id"
   end
 
-  add_index "users", ["role_id"], name: "index_users_on_role_id", using: :btree
-
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "units", "dusers"
   add_foreign_key "users", "roles"
 end

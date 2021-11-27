@@ -1,0 +1,44 @@
+
+<tr class="tr_clone" id="tr_clone_<%=duser_metric.id.to_s%>" >
+<%= fields_for "duser_metrics[]", duser_metric do |f| %>  
+<%# Rails.logger.info "in duser_metric_tr partial: on duser_id #{duser_metric.inspect}" %>  
+   <td> 
+        <% @m = Metric.where( " duser_id = 1 or duser_id = ?", current_duser.id ) %>
+         <%#= f.select :metric_id, options_for_select(@m.map{ |c| [c.name, c.id, {'data-remote'=> true } ]}, selected_key = f.object.metric_id) %>
+        <%#=f.collection_select(:metric_id, @m, :id, :name, data: { remote: true }) %>
+        <%=f.collection_select(:metric_id, @m, :id, :name,{}, 
+          { :data => { remote: true,
+                       :url => url_for(:controller => "user_session", 
+                       :action => "show_unit_display",
+                       :id => duser_metric.id.to_s)
+         }}) %>
+    </td>
+   <td> <%= f.number_field :value  %>  </td>
+   <%= render partial: "shared/metric_unit_display", locals: {duser_metric: duser_metric} %> 
+   <td> <%= f.text_field :occur_dttm , class: :default_datetimepicker%> </td>
+   <td>
+   <%= link_to duser_metric,:class => "btn btn-default btn-xs tr_clone_remove_btn",:method =>"delete", :remote => true do %>
+      <span class="fa fa-remove" aria-hidden="true" style="color:red; font-size: 10px; font-weight: lighter "></span>
+   <% end %>  
+   </td>
+   <td>
+   <%= link_to user_session_edit_path(:id => duser_metric.id.to_s),:controller => "user_session", :action => "edit",  :class => "btn btn-default btn-xs tr_clone_edit_btn" , :method => "post", data: { remote: true, modal: true } do %>
+      <span class="fa fa-pencil" aria-hidden="true" style="color:black; font-size: 10px; font-weight: lighter "></span>
+   <% end %>  
+   </td>
+   <td>
+   <%= link_to user_session_create_path(:clone_id => duser_metric.id.to_s),:controller => "user_session", :action => "create",:class => "btn btn-default btn-xs tr_clone_add_btn", :method => "post", :remote => true do %>
+      <span class="fa fa-plus" aria-hidden="true" style="color:blue; font-size: 10px; font-weight: lighter "></span>
+   <% end %>  
+   </td>
+<% end %>  
+</tr>
+<script type="text/javascript">
+   
+         $('.default_datetimepicker').datetimepicker({
+          format: 'Y-m-d H:i:s O',
+          lazyInit:true,
+          step: 1,
+          validateOnBlur:false
+      });
+</script>

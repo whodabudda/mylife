@@ -12,12 +12,14 @@
 
 <p>
   <strong>Duser:</strong>
-  <%= @metric.duser %>
+  <%= @metric.duser_id %>
+	<strong>Is System User?:</strong>
+	<%= Duser.system_user?(current_duser.id) %>
 </p>
 
 <p>
   <strong>Unit:</strong>
-  <%= @metric.unit %>
+  <%= @metric.unit_id %>
 </p>
 
 <%= link_to 'Edit', edit_metric_path(@metric) %> |

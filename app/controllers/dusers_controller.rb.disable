@@ -1,7 +1,0 @@
-class Dusers::SessionsController < Devise::SessionsController
-	def sign_in
-	end
-	def new
-	end
-
-end

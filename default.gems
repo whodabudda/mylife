@@ -1,0 +1,7 @@
+# default.gems generated gem export file. Note that any env variable settings will be missing. Append these after using a ';' field separator
+
+bigdecimal -v1.2.8
+io-console -v0.4.5
+json -v1.8.3
+psych -v2.0.17
+rdoc -v4.2.1

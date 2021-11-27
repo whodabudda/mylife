@@ -1,0 +1,155 @@
+<div id="highchart_mychart" style="width:100%; height:400px;"></div>
+
+<%#= raw @highchart_js %>
+<script>
+      var chart1; // globally available
+      //
+      //function to format date as the number of weeks from the beginning of the year
+      //
+      Highcharts.dateFormats.W = function (timestamp) {
+        var date = new Date(timestamp)
+        var weeks = Math.floor(
+          (
+          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) 
+           - Date.UTC(date.getFullYear(), 0, 0)
+          ) 
+           / (24* 60 * 60 * 1000) //milliseconds in a day
+           / 7                    //seven days in a week
+        );  //end Math.floor
+        return weeks;
+      };
+
+      Highcharts.dateFormats.D = function (timestamp) {
+        var date = new Date(timestamp)
+ 
+        var days = Math.floor(
+          (
+          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) 
+           - Date.UTC(date.getFullYear(), 0, 0)
+          ) 
+           / (24* 60 * 60 * 1000) //milliseconds in a day
+                               //seven days in a week
+        );  //end Math.floor
+        return days;
+      };
+
+      $(function() {
+      chart1 = new Highcharts.chart('highchart_mychart', {
+        rangeSelector: {
+          //selected: 1,
+          enabled: true,
+         // allButtonsEnabled: true,
+          inputEnabled: true
+        },
+        chart: {
+         zoomType: 'xy',
+         panning: true,
+         panKey: 'shift'
+         },
+    tooltip: {
+        crosshairs: true,
+      shared: false,
+      formatter: function() {
+        var line1 = Highcharts.dateFormat('%A, %b %e, %H:%M/%Y', new Date(this.point.x));
+        if (this.point.y > 0) {
+          line1 += ('<br>Value: ' + this.point.y );
+        } else {
+          line1 += (' <br>' + this.series.name);
+        }
+        
+        if(typeof this.point.myData !== "undefined") {
+          return  line1  + '<b>:' + this.point.myData + '</b>';
+        }else {
+          return line1;       
+        }
+      }
+    },
+        
+   //     zoomType: 'x',
+        title: {
+            text: 'pauls Biometric Chart'
+        },
+        xAxis: {
+	       labels:
+	       {
+		      formatter: function()
+		      {
+             //   Highcharts.each(this.series[0].points, function(point) {
+             //       if (point.x === timestamp) {
+             //           console.log("Formatter y value: " + point.y)
+             //         }
+             //   });
+
+                console.log("Formatter: " + this.value)
+                console.log(this)
+                console.log(this.chart.series[0].data[0])
+                //console.log("Formatter x:" + chart1.series[0].data[0].x + " y:" + chart1.series[0].data[0].y)
+			     return Highcharts.dateFormat('day:%D' + '\n' + '%Y', this.value);
+		      },
+              type: 'datetime',
+              rotation: -30,
+              breaks: [{
+            from: 1587772800000,
+            to: 1618667200000,
+            breakSize: (24* 60 * 60 * 1000)
+            }]
+
+	       },
+           zoomEnabled: true,
+
+        },
+        yAxis: {
+            minRange: 0,
+            maxRange: 10000,
+            title: {
+                text: 'Numeric Series'
+            }
+       },
+      	legend: {
+        	enabled: true
+      	},
+	//		dataGrouping: {	approximation: function (groupData) {console.log("returning groupData: " + groupData[0]) ; return groupData[0]; }}
+      	navigator: {
+      		enabled: true
+      		     	},
+	series: [{  type: 'line', name: 'BP Systolic', color: '#ff0000', lineWidth: 1,marker: {enabled: true, radius: 7 }, states: {hover: {lineWidthPlus: 0 } },tooltip: {valueDecimals: 2 },visible: true 
+            ,data: [[Date.UTC(2019,9 ,19,22,0),120],[Date.UTC(2019,9 ,19,22,0),120],[Date.UTC(2019,10 ,1,15,48),182],[Date.UTC(2019,10 ,26,9,0),80],[Date.UTC(2019,10 ,28,9,0),90],[Date.UTC(2019,11 ,16,19,31),65],[Date.UTC(2019,11 ,23,16,23),800],[Date.UTC(2020,0 ,11,9,1),150],[Date.UTC(2020,2 ,7,15,59),90],[Date.UTC(2020,2 ,7,15,59),200],[Date.UTC(2021,2 ,15,16,43),100],[Date.UTC(2021,5 ,25,12,0),140],[Date.UTC(2021,6 ,4,12,0),150],[Date.UTC(2021,6 ,4,12,0),160],[Date.UTC(2021,6 ,4,12,0),170],[Date.UTC(2021,6 ,4,12,0),120],[Date.UTC(2021,6 ,4,19,1),121],[Date.UTC(2021,6 ,4,19,2),122],[Date.UTC(2021,6 ,4,19,3),123],[Date.UTC(2021,6 ,7,9,4),123]] }
+            ,{ type: 'lollipop', name: 'BP Diastolic', color: '#ff0000', lineWidth: 0,marker: {enabled: true, radius: 7 }, states: {hover: {lineWidthPlus: 0 } },tooltip: {valueDecimals: 2 },visible: true, data: [[Date.UTC(2019,10 ,1,15,48),91],[Date.UTC(2019,10 ,1,15,48),66],[Date.UTC(2019,10 ,26,8,0),60],[Date.UTC(2019,10 ,27,10,34),70],[Date.UTC(2019,10 ,28,9,0),70],[Date.UTC(2019,10 ,28,9,0),130],[Date.UTC(2019,11 ,16,20,31),90],[Date.UTC(2020,0 ,11,9,30),60],[Date.UTC(2020,2 ,7,15,59),60],[Date.UTC(2021,2 ,7,17,43),100],[Date.UTC(2021,2 ,15,16,43),1]] }
+            ,{  type: 'lollipop',name: 'Pulse', color: '#2020ff', lineWidth: 0,marker: {enabled: true, radius: 7 }, states: {hover: {lineWidthPlus: 0 } },tooltip: {valueDecimals: 2 },visible: true, data: [[Date.UTC(2019,10 ,26,9,0),144],[Date.UTC(2019,10 ,27,10,34),80],[Date.UTC(2019,10 ,27,10,34),140],[Date.UTC(2019,11 ,16,18,31),150],[Date.UTC(2019,11 ,23,17,54),120],[Date.UTC(2020,0 ,8,9,1),70],[Date.UTC(2021,2 ,7,17,43),43],[Date.UTC(2021,2 ,7,20,27),60]] }
+            ,{  type: 'lollipop',name: 'Blood Sugar', color: '#ff00ff', lineWidth: 0,marker: {enabled: true, radius: 7 }, states: {hover: {lineWidthPlus: 0 } },tooltip: {valueDecimals: 2 },visible: true, data: [[Date.UTC(2019,11 ,24,22,0),97],[Date.UTC(2020,0 ,8,9,1),55],[Date.UTC(2021,2 ,10,2,9),36],[Date.UTC(2021,2 ,12,16,43),1000],[Date.UTC(2021,2 ,14,14,0),80]] }
+            ,{  type: 'lollipop',name: 'Big Lunch', color: '#ff8000', lineWidth: 0,marker: {enabled: true, radius: 7 }, states: {hover: {lineWidthPlus: 0 } },tooltip: {valueDecimals: 2 },visible: true, data: [[Date.UTC(2019,10 ,26,9,0),60],[Date.UTC(2019,11 ,23,22,0),30],[Date.UTC(2020,0 ,13,9,1),144],[Date.UTC(2021,2 ,13,1,7),22],[Date.UTC(2021,2 ,14,1,43),100]] }
+            ,{  type: 'lollipop',name: 'Run', color: '#ff8040', lineWidth: 0,marker: {enabled: true, radius: 7 }, states: {hover: {lineWidthPlus: 0 } },tooltip: {valueDecimals: 2 },visible: false, data: [[Date.UTC(2019,11 ,23,4,0),30],[Date.UTC(2021,2 ,7,17,43),330],[Date.UTC(2021,2 ,7,17,43),30],[Date.UTC(2021,2 ,7,17,43),5],[Date.UTC(2021,2 ,7,20,27),60],[Date.UTC(2021,2 ,10,1,43),132],[Date.UTC(2021,2 ,12,1,43),1320],[Date.UTC(2021,2 ,12,16,43),428],[Date.UTC(2021,2 ,14,1,43),332]] }
+            ,{  type: 'lollipop',name: 'jumping jacks', color: '#ff8000', lineWidth: 0,marker: {enabled: true, radius: 7 }, states: {hover: {lineWidthPlus: 0 } },tooltip: {valueDecimals: 2 },visible: true, data: [[Date.UTC(2019,11 ,25,22,0),63],[Date.UTC(2019,11 ,29,17,54),160],[Date.UTC(2020,0 ,8,9,1),120],[Date.UTC(2020,0 ,13,17,1),80],[Date.UTC(2021,2 ,8,2,7),22],[Date.UTC(2021,2 ,12,16,43),132],[Date.UTC(2021,2 ,12,16,43),43],[Date.UTC(2021,2 ,14,14,59),80]] }
+            ,{  type: 'lollipop',name: 'knee bends', color: '#008040', lineWidth: 0,marker: {enabled: true, radius: 7 }, states: {hover: {lineWidthPlus: 0 } },tooltip: {valueDecimals: 2 },visible: true, data: [[Date.UTC(2021,2 ,9,1,43),430],[Date.UTC(2021,2 ,14,14,59),150]] }]      
+        });
+    }); 
+
+</script>
+
+<script>
+//window.onsvgload(function() )	
+//$("text").on( "click", function() {
+//  console.log( "This is my very own CUSTOM log output" );
+//  console.log( $( this ).text() );
+//});
+
+document.addEventListener('click', function (event) {
+	console.log(event.target);
+	console.log(event.target.innerHTML);
+	if (chart1.series.some(e => e.name === event.target.innerHTML)) {
+		console.log( event.target.innerHTML + " is a series" );
+	}
+	if (event.target.closest('text')  && chart1.series.some(e => e.name === event.target.innerHTML)){
+		console.log( "This is my very own CUSTOM log output" );
+		console.log('length is: ' + chart1.series.length);
+		for (var i = 0; i < chart1.series.length; i++) {
+		        console.log(chart1.series[i].name + ' : ' + chart1.series[i].visible);
+		}
+   }
+//    chart1.series.each( function(s) {
+ //         if (!s.visible) {
+  //          console.log(s.name + ' is not visible!');
+   //       }
+    //    });
+}, false);
+</script>

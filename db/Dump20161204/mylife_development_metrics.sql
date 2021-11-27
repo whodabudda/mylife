@@ -1,0 +1,37 @@
+-- MySQL dump 10.13  Distrib 5.6.24, for Win64 (x86_64)
+--
+-- Host: localhost    Database: mylife_development
+-- ------------------------------------------------------
+-- Server version	5.6.21-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Dumping data for table `metrics`
+--
+
+LOCK TABLES `metrics` WRITE;
+/*!40000 ALTER TABLE `metrics` DISABLE KEYS */;
+INSERT INTO `metrics` VALUES (1,'BP Systolic','',2,1,'2015-10-24 17:44:41','2015-12-24 16:52:16','#ff0000'),(2,'BP Diastolic','Lower number for Blood Pressure',1,2,'2015-10-25 16:08:05','2015-12-24 17:38:49','#ff0000'),(3,'Pulse','Rate of Heartbeat',2,10,'2015-11-19 16:02:20','2015-12-24 16:54:11','#2020ff'),(4,'Blood Sugar','Concentration of Glucose in the Blood',2,5,'2015-11-19 16:19:18','2015-12-24 16:55:56','#ff00ff'),(5,'Big Lunch','Pig out on scale of 1 to 10',2,11,'2015-11-19 16:22:56','2015-12-24 16:56:22','#ff8000'),(6,'Run','My Jogging Routine',2,11,'2015-12-23 17:55:21','2015-12-24 16:57:14','#ff8040'),(7,'jumping jacks','',2,1,'2015-12-23 22:00:30','2015-12-24 16:57:36','#ff8000'),(8,'treadmill','minutes on the treadmill',2,11,'2016-01-10 14:44:08','2016-01-10 14:45:54','#804000'),(9,'knee bends','',2,11,'2016-01-10 14:50:41','2016-01-10 14:50:41','#008040');
+/*!40000 ALTER TABLE `metrics` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2016-12-04 12:39:28

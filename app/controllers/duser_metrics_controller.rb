@@ -1,10 +1,12 @@
 class DuserMetricsController < ApplicationController
   before_action :set_duser_metric, only: [:show, :edit, :update, :destroy]
-
+  before_action :log_action
+  respond_to :html, :json, :js
+  
   # GET /duser_metrics
   # GET /duser_metrics.json
   def index
-    @duser_metrics = DuserMetric.all
+    @duser_metrics = DuserMetric.where("duser_id = ?" , current_duser.id)
   end
 
   # GET /duser_metrics/1
@@ -14,7 +16,12 @@ class DuserMetricsController < ApplicationController
 
   # GET /duser_metrics/new
   def new
-    @duser_metric = DuserMetric.new
+    #use the 
+    @duser_metric = DuserMetric.where("duser_id = ?" , current_duser.id).last.dup
+    @duser_metric.value = nil
+    render layout: "modal"
+    #respond_modal_with @duser_metric
+    #@duser_metric = DuserMetric.last(duser_id: current_duser.id).dup
   end
 
   # GET /duser_metrics/1/edit
@@ -23,18 +30,22 @@ class DuserMetricsController < ApplicationController
 
   # create a HighStock chart from a users data
   def chart
-    
+
   end
 
   # POST /duser_metrics
   # POST /duser_metrics.json
-  def create
-    @duser_metric = DuserMetric.new(duser_metric_params)
-
+  def create_disable
+    if params.has_key?(:clone_id)
+     @duser_metric = DuserMetric.find(params[:clone_id]).dup
+    else
+     @duser_metric = DuserMetric.new(duser_metric_params)
+    end
     respond_to do |format|
       if @duser_metric.save
         format.html { redirect_to @duser_metric, notice: 'Duser metric was successfully created.' }
         format.json { render :show, status: :created, location: @duser_metric }
+        format.js { render :controller => :user_session, :action => :create , notice: 'Duser metric was successfully cloned.' }
       else
         format.html { render :new }
         format.json { render json: @duser_metric.errors, status: :unprocessable_entity }
@@ -45,10 +56,18 @@ class DuserMetricsController < ApplicationController
   # PATCH/PUT /duser_metrics/1
   # PATCH/PUT /duser_metrics/1.json
   def update
+    @duser_metric.update(duser_metric_params)
     respond_to do |format|
-      if @duser_metric.update(duser_metric_params)
-        format.html { redirect_to @duser_metric, notice: 'Duser metric was successfully updated.' }
-        format.json { render :show, status: :ok, location: @duser_metric }
+      format.js
+    end
+#    respond_with @duser_metric
+  end
+
+  def save_duser_metric_table
+    respond_to do |format|
+      if @duser_metric = DuserMetric.update(params[:duser_metrics].keys, params[:duser_metrics].values)
+        format.html { redirect_to :controller => :user_session, :action => :home , notice: 'Duser metric was successfully updated.' }
+        format.json { render :controller => :user_session, :action => :home , status: :ok, location: @duser_metric }
       else
         format.html { render :edit }
         format.json { render json: @duser_metric.errors, status: :unprocessable_entity }
@@ -56,17 +75,24 @@ class DuserMetricsController < ApplicationController
     end
   end
 
+
   # DELETE /duser_metrics/1
   # DELETE /duser_metrics/1.json
   def destroy
     @duser_metric.destroy
     respond_to do |format|
-      format.html { redirect_to duser_metrics_url, notice: 'Duser metric was successfully destroyed.' }
+      format.html { redirect_to :controller => :user_session, :action => :home, notice: 'Duser metric was successfully destroyed.' }
       format.json { head :no_content }
+      format.js
+#      format.js { render :nothing => true }
     end
   end
 
   private
+  def log_action
+    Rails.logger.info "in: #{params[:controller]} : #{params[:action]}  for user: " + current_duser.id.to_s
+    Rails.logger.info "params are: #{params.inspect}"
+  end
     # Use callbacks to share common setup or constraints between actions.
     def set_duser_metric
       @duser_metric = DuserMetric.find(params[:id])

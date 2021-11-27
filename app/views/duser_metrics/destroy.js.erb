@@ -1,0 +1,25 @@
+<% if @duser_metric.errors.any? %>
+
+  // Create a list of errors
+  var errors = $('<ul />');
+
+  <% @duser_metric.errors.full_messages.each do |error| %>
+    errors.append('<li><%= escape_javascript(error) %></li>');
+  <% end %>
+
+  alert(errors)
+<% else %>
+
+
+  //
+  //If there wasn't an error removing the row in the database, 
+  //  1. remove the row from the table display
+  //  2. remove the point from the chart
+  //
+  $("#tr_clone_<%=@duser_metric.id%>").remove()
+  var thePoint = chart1.get(<%=@duser_metric.id%>);
+  if (thePoint) {
+        thePoint.remove();
+  }
+
+<% end %>

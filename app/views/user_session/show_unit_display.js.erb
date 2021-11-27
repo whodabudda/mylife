@@ -1,0 +1,1 @@
+$("#show_unit_display_<%=@duser_metric.id%>").replaceWith("<%= escape_javascript("#{render :partial => 'shared/metric_unit_display', :locals => { :duser_metric => @duser_metric }}").html_safe %>");

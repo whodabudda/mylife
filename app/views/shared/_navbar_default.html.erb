@@ -1,21 +1,33 @@
-   <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li class="<%= 'active' if current_page?(root_path) %>"><%= link_to 'Home', root_path %></li>
-            <li class="<%= 'active' if current_page?(welcome_about_path) %>"><%= link_to 'About', welcome_about_path %></li>
-            <li class="<%= 'active' if current_page?(welcome_doc_path) %>"><%= link_to 'Doc', welcome_doc_path %></li>
-            <li><%= link_to 'Log Off', destroy_duser_session_path , method: :delete if duser_signed_in? %></li>
-          </ul>
-          <%= session_message %>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+<nav class="navbar sticky-top navbar-expand-md bg-light navbar-light">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+ <a class="navbar-brand" href="#">
+    Whodabudda
+  </a>
+ 
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item <%= 'active' if current_page?(root_path) %>"><%= link_to 'Home', root_path,:class => 'nav-link' %></li>
+      <li class="nav-item <%= 'active' if current_page?(welcome_about_path) %>"><%= link_to 'About', welcome_about_path ,:class => 'nav-link'%></li>
+      <li class="nav-item <%= 'active' if current_page?(welcome_doc_path) %>"><%= link_to 'Doc', welcome_doc_path ,:class => 'nav-link'%></li>
+      <li class="nav-item btn-group">
+         <a class="dropdown-toggle nav-link" href="#" type="button" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          New Content
+         </a>
+         <div class="dropdown-menu" role="menu" aria-labelledby="navbarDropdownMenuLink">
+              <%= link_to 'New Metric',  [:new ,"metric".underscore ], :class => "dropdown-item"  %>
+              <%= link_to 'New Unit',  [:new ,"unit".underscore ], data: { remote: true, modal: true }, :class => "dropdown-item" %>
+              <%#= link_to 'New Value', [:new ,"duser_metric".underscore ],data: { remote: true, modal: true } , :class => "dropdown-item" %> 
+         </div>
+      </li>
+      <li><%= link_to 'Log Off', destroy_duser_session_path , method: :delete,:class => 'nav-link' if duser_signed_in? %></li>
+
+    </ul>
+       <ul class="navbar-nav">
+         <li class="nav-item"> 
+             <%= session_message %>
+         </li>
+       </ul>
+  </div>
+</nav>

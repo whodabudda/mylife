@@ -14,7 +14,7 @@ default: &default
   encoding: utf8
   pool: 5
   username: mylife
-  password: YXuKNPi1f4
+  password: mylife
   host: 127.0.0.1
 
 development:

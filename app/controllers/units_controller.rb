@@ -15,6 +15,9 @@ class UnitsController < ApplicationController
   # GET /units/new
   def new
     @unit = Unit.new
+    @unit.duser_id = current_duser.id
+    render layout: "modal"
+
   end
 
   # GET /units/1/edit

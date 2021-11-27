@@ -1,0 +1,338 @@
+
+
+<div id="highchart_mychart" style="width:100%; height:50px;"></div>
+
+<%#= raw @highchart_js %>
+<script>
+  /*
+Formats a JavaScript date timestamp (milliseconds since Jan 1st 1970) into a human readable date string. The available format keys are listed below. Additional formats can be given in the Highcharts.dateFormats hook.
+    %a: Short weekday, like 'Mon'
+    %A: Long weekday, like 'Monday'
+    %d: Two digit day of the month, 01 to 31
+    %e: Day of the month, 1 through 31
+    %w: Day of the week, 0 through 6
+    %b: Short month, like 'Jan'
+    %B: Long month, like 'January'
+    %m: Two digit month number, 01 through 12
+    %y: Two digits year, like 09 for 2009
+    %Y: Four digits year, like 2009
+    %H: Two digits hours in 24h format, 00 through 23
+    %k: Hours in 24h format, 0 through 23
+    %I: Two digits hours in 12h format, 00 through 11
+    %l: Hours in 12h format, 1 through 12
+    %M: Two digits minutes, 00 through 59
+    %p: Upper case AM or PM
+    %P: Lower case AM or PM
+    %S: Two digits seconds, 00 through 59
+    %L: Milliseconds (naming from Ruby)
+*/
+var chartdata = '{"xData": [1571547600000, 1572648480000, 1574784000000, 1574787600000, 1574879640000, 1574960400000, 1576549860000, 1576553460000, 1576557060000, 1577102400000, 1577146980000, 1577152440000, 1577167200000, 1577253600000, 1577340000000, 1577670840000, 1578502860000, 1578762060000, 1578763800000, 1578934860000, 1578963660000, 1583625540000, 1583725540000, 1615177620000, 1615198020000, 1615282980000, 1615369380000, 1615370940000, 1615542180000, 1615596180000, 1615626420000, 1615714980000, 1615755600000, 1615759140000, 1615851780000, 1624647600000, 1625425200000, 1625450460000, 1625450520000, 1625450580000, 1625673840000], "datasets": [{"name": "BP", "data": [150, 160, 170, 180, 150, 160, 150, 140, 130, 120, 110, 100, 150, 130, 140, 150, 160, 150, 151, 152, 153, 154, 155, 160, 161, 162, 163, 164, 165, 151, 152, 153, 154, 155, 156, 170, 172, 174, 176, 178, 180 ], "unit": "mm", "type": "spline", "valueDecimals": 0 }, {"name": "Blood Sugar", "data": [50, 160, 170, 180, 150, 160, 150, 140, 130, 120, 110, 100, 150, 130, 140, 150, 160, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 170, 170, 170, 170, 170, 170 ], "unit": "u/ml", "type": "lollipop", "valueDecimals": 0 }, {"name": "Heart rate", "data": [101,98,103,115,124,128,133,138,138,141,143,149,149,148,146,147,152,149,155,152,153,153,156,152,151,151,149,148,150,157,161,156,160,158,156,159,164,162,160,165,165], "unit": "bpm", "type": "area", "valueDecimals": 0 }] }'
+      var chart1; // globally available
+      var prev_days; // globally available
+      //
+      //function to format date as the number of weeks from the beginning of the year
+      //
+      Highcharts.dateFormats.W = function (timestamp) {
+        var date = new Date(timestamp)
+        var weeks = Math.floor(
+          (
+          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) 
+           - Date.UTC(date.getFullYear(), 0, 0)
+          ) 
+           / (24* 60 * 60 * 1000) //milliseconds in a day
+           / 7                    //seven days in a week
+        );  //end Math.floor
+        return weeks;
+      };
+
+      Highcharts.dateFormats.Days = function (timestamp) {
+        var date = new Date(timestamp)
+ 
+        var days = Math.floor(
+          (
+          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) 
+           - Date.UTC(date.getFullYear(), 0, 0)
+          ) 
+           / (24* 60 * 60 * 1000) //milliseconds in a day
+                               //seven days in a week
+        );  //end Math.floor
+        return days;
+      };
+
+      Highcharts.dateFormats.x = function (timestamp) {
+        var date = new Date(timestamp)
+ 
+        return (date.getMonth()+1) + "-" + date.getDate() + "-" + date.getFullYear();
+      };
+      /**
+ * In order to synchronize tooltips and crosshairs, override the
+ * built-in events with handlers defined on the parent element.
+ */
+['mousemove', 'touchmove', 'touchstart'].forEach(function (eventType) {
+    document.getElementById('highchart_mychart').addEventListener(
+        eventType,
+        function (e) {
+            var chart,
+                point,
+                i,
+                event;
+
+            for (i = 0; i < Highcharts.charts.length; i = i + 1) {
+                chart = Highcharts.charts[i];
+                // Find coordinates within the chart
+                event = chart.pointer.normalize(e);
+                // Get the hovered point
+                point = chart.series[0].searchPoint(event, true);
+
+                if (point) {
+                    point.highlight(e);
+                }
+            }
+        }
+    );
+});
+/**
+ * Override the reset function, we don't need to hide the tooltips and
+ * crosshairs.
+ */
+Highcharts.Pointer.prototype.reset = function () {
+    return undefined;
+};
+/**
+ * Highlight a point by showing tooltip, setting hover state and draw crosshair
+ */
+Highcharts.Point.prototype.highlight = function (event) {
+    event = this.series.chart.pointer.normalize(event);
+    this.onMouseOver(); // Show the hover marker
+    this.series.chart.tooltip.refresh(this); // Show the tooltip
+    this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair
+};
+
+/**
+ * Synchronize zooming through the setExtremes event handler.
+ */
+function syncExtremes(e) {
+    var thisChart = this.chart;
+
+    if (e.trigger !== 'syncExtremes') { // Prevent feedback loop
+        Highcharts.each(Highcharts.charts, function (chart) {
+            if (chart !== thisChart) {
+                if (chart.xAxis[0].setExtremes) { // It is null while updating
+                    chart.xAxis[0].setExtremes(
+                        e.min,
+                        e.max,
+                        undefined,
+                        false,
+                        { trigger: 'syncExtremes' }
+                    );
+                }
+            }
+        });
+    }
+}
+//document.addEventListener('click', checkSeries(event) {
+function  checkSeries (e) {
+  var chart1 = this.chart;
+  var event = e;
+  console.log(event.target);
+  console.log(event.target.innerHTML);
+  if (chart1.series.some(e => e.name === event.target.innerHTML)) {
+    console.log( event.target.innerHTML + " is a series" );
+  }
+  if (event.target.closest('text')  && chart1.series.some(e => e.name === event.target.innerHTML)){
+    console.log( "This is my very own CUSTOM log output" );
+    console.log('length is: ' + chart1.series.length);
+    for ( var i = 0; i < chart1.series.length; i++) {
+            console.log(chart1.series[i].name + ' : ' + chart1.series[i].visible);
+    }
+   }
+//    chart1.series.each( function(s) {
+ //         if (!s.visible) {
+  //          console.log(s.name + ' is not visible!');
+   //       }
+    //    });
+};
+//},false);
+
+   $(function() {
+//      chart1 = new Highcharts.chart('highchart_mychart', {
+    activity = JSON.parse(chartdata);
+    activity.datasets.forEach(function (dataset, i) {
+
+      console.log("On Dataset series: " + dataset.name)
+      // Add X values
+      dataset.data = Highcharts.map(dataset.data, function (val, j) {
+          return [activity.xData[j], val];
+      });
+
+      var chartDiv = document.createElement('div');
+      chartDiv.className = 'chart';
+      document.getElementById('highchart_mychart').appendChild(chartDiv);
+
+       Highcharts.chart(chartDiv, {
+
+        rangeSelector: {
+          //selected: 1,
+          enabled: true,
+          allButtonsEnabled: true,
+          inputEnabled: true
+        },
+        chart: {
+         zoomType: 'xy',
+         panning: true,
+         panKey: 'shift',
+         marginLeft: 40, // Keep all charts left aligned
+         spacingTop: 20,
+         spacingBottom: 20,
+         events: {
+          click: checkSeries
+         }
+        },
+
+        tooltip: {
+          crosshairs: true,
+          shared: false,
+          formatter: function() {
+//            var line1 = Highcharts.dateFormat('%a, %b %e, %H:%M/%Y', new Date(this.point.x));
+            var line1 = Highcharts.dateFormat('%a, %b %e %Y %H:%M', new Date(this.point.x));
+            line1 += (' <br>' + this.series.name);
+            if (this.point.y > 0) {
+              line1 += ('<br>Value: ' + this.point.y );
+            } else {
+            }
+            
+            if(typeof this.point.myData !== "undefined") {
+              return  line1  + '<b>:' + this.point.myData + '</b>';
+            }else {
+              return line1;       
+            }
+          } //formatter function
+        },  //tooltip
+          
+   //     zoomType: 'x',
+        title: {
+            text: 'pauls Biometric Chart'
+        },
+        xAxis: {
+         labels:
+	       {
+		      formatter: function() {
+             //   Highcharts.each(this.series[0].points, function(point) {
+             //       if (point.x === timestamp) {
+             //           console.log("Formatter y value: " + point.y)
+             //         }
+             //   });
+
+                //console.log(this)
+                //console.log(this.chart.series[0].data[0])
+                //console.log("Formatter x:" + chart1.series[0].data[0].x + " y:" + chart1.series[0].data[0].y)
+                days = Highcharts.dateFormat('%Days', this.value)
+                console.log("Labels Formatter prev_days: " + prev_days + " new days: " + days)
+                if (prev_days !=  days) {
+                  prev_days = days
+                  return Highcharts.dateFormat('%x', this.value);
+                }
+                else {
+                  return null;
+                }
+		      },
+            //labels formatter
+              //type: 'datetime',
+          rotation: -30,
+          allowOverlap: false
+//              breaks: [{
+//                from: 1587772800000,
+//                to: 1618667200000,
+//                breakSize: (24* 60 * 60 * 1000 * 30)
+//              }
+//              {
+//                from: 1587772800000,
+//                to: 1618667200000,
+//               breakSize: (24* 60 * 60 * 1000)
+//              }
+//              ]
+
+	        },
+           zoomEnabled: true,
+//             evants: {
+//              setExtremes: mysetExtremes
+//             },
+//           events: {
+//            setExtremes: function()
+//            {
+//             chart1.xAxis[0].setExtremes(
+//                        Date.UTC(2021,3,1),
+//                        Date.UTC(2021,7.14)
+//             );
+              //chart1.xAxis[0].min = Date.UTC(2021,3,1)
+              ////chart1.xAxis[0].max = Date.UTC(2021,3,14)
+
+//             console.log("setExtremes: " + chart1.series[0].xAxis.min)
+//             console.log("setExtremes: " + chart1.series[0].xAxis.max)
+//            }
+//           },
+           tickAmount: 10,
+           minorTicks: true,
+           minTickInterval: 20,
+           crosshair: true,
+           events: {
+            setExtremes: syncExtremes
+           }
+        }, //xaxis
+        yAxis: {
+            minRange: 0,
+            maxRange: 10000,
+            title: {
+                text: 'Numeric Series'
+            },
+
+        },  //yaxis
+      	legend: {
+        	enabled: true
+      	},
+	//		dataGrouping: {	approximation: function (groupData) {console.log("returning groupData: " + groupData[0]) ; return groupData[0]; }}
+      	navigator: {
+      		enabled: true
+	     	},
+        series: [{
+          data: dataset.data,
+          name: dataset.name,
+          type: dataset.type,
+          color: Highcharts.getOptions().colors[i],
+          fillOpacity: 0.3,
+          //tooltip: {
+          //   valueSuffix: ' ' + dataset.unit
+          //}
+        }]
+
+        });   //highchart mychart
+     });       //for each()
+    });       //function()
+
+</script>
+
+<script>
+//window.onsvgload(function() )	
+//$("text").on( "click", function() {
+//  console.log( "This is my very own CUSTOM log output" );
+//  console.log( $( this ).text() );
+//});
+
+
+function mysetExtremes(e){
+    chart1 = this.chart
+    console.log("mysetExtremes: " + chart.series[0].xAxis.min)
+    console.log("mysetExtremes: " + chart.series[0].xAxis.max)
+};
+
+document.getElementById('button').addEventListener('click', () => {
+    chart1 = this.chart
+    chart1.series[0].xAxis.setExtremes(Date.UTC(2021, 6, 1), Date.UTC(2021, 6, 26));
+    console.log("setExtremes: " + chart.series[0].xAxis.min)
+    console.log("setExtremes: " + chart.series[0].xAxis.max)
+});
+</script>
+
+<div>
+<button id="button" class="autocompare">Set extremes</button>
+</div>
