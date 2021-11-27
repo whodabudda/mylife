@@ -8,11 +8,22 @@ Rails.application.routes.draw do
   get 'user_session/define_metric'
 
   get 'user_session/define_event'
+  get 'user_session/chart'
 
   get 'user_session/refresh'
-  get 'duser_metrics/chart'
+  get 'user_session/show_unit_display'
+  get 'user_session/filter_table_rows'
+  post 'user_session/home', to: 'user_session#changes'
+  post 'user_session/create', to: 'user_session#create'
+  post 'user_session/edit', to: 'user_session#edit'
+  post 'user_session/delete', to: 'duser_metrics#destroy'
+  post 'duser_metrics', to: 'user_session#create'
 
-  resources :duser_metrics
+  patch 'duser_metrics/save_duser_metric_table'
+  get 'duser_metrics/chart'
+  delete 'duser_metrics/destroy'
+
+  resources :duser_metrics, :except => [:create]
   resources :units
   resources :metrics
   #devise_for :dusers, contro

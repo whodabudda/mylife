@@ -1,10 +1,15 @@
 class MetricsController < ApplicationController
-  before_action :set_metric, only: [:show, :edit, :update, :destroy]
+  class NotAuthorized < StandardError
+ end
 
+  before_action :set_metric, only: [:show, :edit, :update, :destroy]
+  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+  rescue_from NotAuthorized, with: :not_authorized
+  #rescue ActionController::RedirectBackError redirect_to root_path 
   # GET /metrics
   # GET /metrics.json
   def index
-    @metrics = Metric.all
+    @metrics = Metric.where("duser_id = ?",current_duser.id)
   end
 
   # GET /metrics/1
@@ -64,11 +69,20 @@ class MetricsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_metric
-      @metric = Metric.find(params[:id])
+        @metric = Metric.find(params[:id])
+        raise NotAuthorized unless (@metric.duser_id == current_duser.id) or (Duser.system_user?(current_duser.id) == true)
+    end
+ 
+    def record_not_found
+      render plain: "404 Not Found : no record for id: " #+ @metric.id + " user_id: " + @metric.duser_id, status: 404
+    end
+    def not_authorized
+      flash[:notice] = "You don't have access to this record."
+      redirect_to :back
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def metric_params
-      params.require(:metric).permit(:name, :description, :duser_id, :unit_id)
+      params.require(:metric).permit(:name, :description, :duser_id, :unit_id,:series_color)
     end
 end

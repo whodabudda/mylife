@@ -1,0 +1,4 @@
+
+
+class HSEventPoint < HSPoint
+end

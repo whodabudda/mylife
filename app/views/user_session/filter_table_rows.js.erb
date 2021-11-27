@@ -1,0 +1,27 @@
+
+//
+//@m_id has the metric_id of the selection
+//
+//select all the <tr> elements that are in the table, classed as 'tr_clone'
+//
+var trrows = document.querySelectorAll("tr.tr_clone")
+//
+//for each table row element, get the next option element that is selected. 
+//its 'value' will be the metric_id of that option in the table row's selection list.
+//As of right now, there is only one 'select' element in the table row.  If we add
+//another, this logic will need to change.
+//
+trrows.forEach(function(row) {
+	var option = row.querySelector("option:checked")
+//
+// if @m_id is zero, then the 'Clear Filter' option was selected.  In either case
+// that we are either displaying all rows, or the row has the selection we are filtering
+// for, we want to display that row.  Any other row, we will un-display. 
+//
+	if ((<%=@m_id == 0%>) || (parseInt(option.value) == <%=@m_id%>))   {
+		row.style.display='table-row'
+     }
+	else {
+		row.style.display='none'
+	}
+});

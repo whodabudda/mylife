@@ -1,7 +1,12 @@
 <p id="notice"><%= notice %></p>
 
 <h1>Listing Duser Metrics</h1>
-
+ <div class="well">
+   <%= link_to "New Metric", new_duser_metric_path, remote: true, class: "btn btn-primary" %>
+ </div>
+<!--
+<div class="new-duser-metric"></div>
+-->
 <table>
   <thead>
     <tr>
@@ -12,22 +17,10 @@
       <th colspan="3"></th>
     </tr>
   </thead>
-
-  <tbody>
-    <% @duser_metrics.each do |duser_metric| %>
-      <tr>
-        <td><%= duser_metric.value %></td>
-        <td><%= duser_metric.occur_dttm %></td>
-        <td><%= duser_metric.duser %></td>
-        <td><%= duser_metric.metric %></td>
-        <td><%= link_to 'Show', duser_metric %></td>
-        <td><%= link_to 'Edit', edit_duser_metric_path(duser_metric) %></td>
-        <td><%= link_to 'Destroy', duser_metric, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
+  <tbody class="duser-metric-index">
+    <%= render "index" %>
   </tbody>
 </table>
-
-<br>
-
-<%= link_to 'New Duser metric', new_duser_metric_path %>
+</div>
+<div id="duser-metric-modal" class="modal fade"></div>
+<%#= link_to 'New Duser metric', new_duser_metric_path %>

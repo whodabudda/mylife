@@ -1,0 +1,2 @@
+class HSMetricPoint < HSPoint
+end

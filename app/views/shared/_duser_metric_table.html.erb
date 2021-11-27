@@ -1,0 +1,46 @@
+        <div class="col-md-8" id="createnewmetricform"> 
+        <p id="notice"><%= notice %></p>
+          <%= form_tag({ :controller => "duser_metrics", :action => "save_duser_metric_table"},{ :method => "patch"} ) do %>  
+
+
+                <table id="thetable" class="thetable">  <!-- style in user_session.scss -->
+                <thead>
+                <tr>
+                  <th> Metric </th>
+                  <th> Value </th>
+                  <th> Units </th>
+                  <th> Datetime </th>
+                  <th> Del </th>
+                  <th> Edit </th>
+                  <th> Copy </th>
+                </tr>
+                </thead>
+                <tfoot><tr><td>This is the TFoot </td></tr></tfoot>
+                <tbody>
+                <% for duser_metric in @displayed_series %>  
+                  <%= render partial: "shared/duser_metric_tr", locals: {duser_metric: duser_metric} %> 
+                <% end %>  
+                </tbody>
+                </table>
+                <p><%= submit_tag "Refresh Chart" %>
+                   <!-- The following creates a dropdown button with select options
+                        The options are taken from the @m collection. The first 2 options are the 
+                        name of the object (metric) and the column in the object (id) to set in the 
+                        select tag attributes as name="metric[id]" and id="metric_id".  This is added to 
+                        the url as a parameter for the Ajax call to "filter_table_rows".  This in turn 
+                        will either display or hide the rows in the table.  Purpose is to help the user
+                        see the data in the table by grouping entries of a selected type together.
+                    -->
+                   <% @m = Metric.where( " duser_id = 1 or duser_id = ?", current_duser.id ) %>
+                   <%= collection_select(:metric,:id,@m, :id, :name,{include_blank: 'Clear Filter'}, 
+                     { :data => { remote: true,
+                       :url => url_for(:controller => "user_session", 
+                       :action => "filter_table_rows")
+                    }}) %>
+
+                </p>  
+
+              <% end %>  
+          </div>
+<div id="duser-metric-modal" class="modal fade"></div>
+

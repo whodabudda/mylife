@@ -1,13 +1,20 @@
-class Duser < ActiveRecord::Base
-	has_many :roles , :through => :duser_roles
-	has_many :duser_roles
-	has_many :metrics , :through => :duser_metrics
-	has_many :duser_metrics
-	has_many :units
 
+class Duser < ActiveRecord::Base
+	has_many :duser_roles
+	has_many :duser_metrics
+	has_many :metrics , :through => :duser_metrics
+	has_many :roles , :through => :duser_roles
+	has_many :units
+	@SystemUser = 1
   	#before_create :set_default_role
 	before_save :check_username
 
+	def self.system_user?(this_user)
+		this_user == @SystemUser
+	end
+	def system_user
+		@SystemUser	
+	end
 
 	# Include default devise modules. Others available are:
 	# :confirmable, :lockable, :timeoutable and :omniauthable
