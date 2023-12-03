@@ -1,6 +1,8 @@
-<h1>Editing Metric</h1>
 
-<%= render 'form' %>
+<%= content_for :'modal-title'  do %>
+   Updating Metric 
+<%end%>
+<%= content_for :'modal-body'  do %>
+<%= render "form" %>
+<%end%>
 
-<%= link_to 'Show', @metric %> |
-<%= link_to 'Back', metrics_path %>

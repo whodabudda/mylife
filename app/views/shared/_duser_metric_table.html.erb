@@ -1,5 +1,4 @@
-        <div class="col-md-8" id="createnewmetricform"> 
-        <p id="notice"><%= notice %></p>
+        <!--div class="col-md-8" id="createnewmetricform"--> 
           <%= form_tag({ :controller => "duser_metrics", :action => "save_duser_metric_table"},{ :method => "patch"} ) do %>  
 
 
@@ -15,12 +14,15 @@
                   <th> Copy </th>
                 </tr>
                 </thead>
-                <tfoot><tr><td>This is the TFoot </td></tr></tfoot>
                 <tbody>
+                <!--
+                  If there are no metrics charted, add an empty one to get started.
+                -->
                 <% for duser_metric in @displayed_series %>  
                   <%= render partial: "shared/duser_metric_tr", locals: {duser_metric: duser_metric} %> 
                 <% end %>  
                 </tbody>
+                <tfoot ><tr><td colspan=7 align="center">End of listing </td></tr></tfoot>
                 </table>
                 <p><%= submit_tag "Refresh Chart" %>
                    <!-- The following creates a dropdown button with select options
@@ -34,13 +36,19 @@
                    <% @m = Metric.where( " duser_id = 1 or duser_id = ?", current_duser.id ) %>
                    <%= collection_select(:metric,:id,@m, :id, :name,{include_blank: 'Clear Filter'}, 
                      { :data => { remote: true,
-                       :url => url_for(:controller => "user_session", 
+                       :url => url_for(:controller => "duser_metrics", 
                        :action => "filter_table_rows")
                     }}) %>
 
                 </p>  
 
               <% end %>  
-          </div>
+          <!--/div-->
+              <% if @displayed_series.none? %>
+              <%#=  link_to 'my_link', :new_duser_metric , remote: true ,hidden: true, id: "salt-row-for-new-user" %>
+              <%#  #controller.redirect_to :new_duser_metric, remote: true, modal: true%>
+              <% end %>
 <div id="duser-metric-modal" class="modal fade"></div>
 
+<script type="text/javascript">
+</script>

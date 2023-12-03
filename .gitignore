@@ -81,7 +81,8 @@ public/uploads
 *.old
 *.disabled
 *.bak
-tt.*
+tt*
+
 
 #ignore npm modules
 /node_modules
@@ -89,6 +90,7 @@ tt.*
 /public/packs-test
 /node_modules
 /yarn-error.log
+.yarn/
 yarn-debug.log*
 .yarn-integrity
 
@@ -105,4 +107,7 @@ scratchpad*
 dev
 releases/
 stage
+
+#ignore binarys
+bin/
 

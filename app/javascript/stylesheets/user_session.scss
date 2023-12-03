@@ -1,6 +1,10 @@
 // Place all the styles related to the UserSession controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+//sass variable for offcanvas sidebar
+$offcanvas-horizontal-width: 200px;
+
 .ui-datepicker {
     background: #333;
     border: 1px solid #555;

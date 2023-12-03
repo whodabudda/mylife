@@ -99,6 +99,7 @@ $(function () {
          marginLeft: 40,  // Keep all charts left aligned
          spacingTop: 20,
          spacingBottom: 20,
+         maxZoom: 5 * 24 * 3600000,
          renderTo: "highchart_mychart"
         },
         rangeSelector: {  //the from/to date input fields that set xdata range
@@ -197,9 +198,15 @@ $(function () {
 //          events: {
 //            setExtremes: syncExtremes
 //           },
+          type: 'datetime',
           tickAmount: 10,
           minorTicks: true,
-          minTickInterval: 20,
+          minorTickInterval: 0.1,
+          minorTickColor: '#003b46',
+          minorTickPosition: 'outside',
+          minorTickWidth: 5,
+          minorGridlineWidth: 0,
+//          minTickInterval: 20,
           crosshair: true,
         }, //xaxis
         yAxis: [ 

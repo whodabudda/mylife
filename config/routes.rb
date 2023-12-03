@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
   get 'user_session/home'
+  get 'reviews/home'
+  get 'reviews/select_modal'
+#  get 'reviews/show_regression/:id' => 'reviews#show_regression', :as => :show_regression
+  get 'reviews/show_regression'
 
   get 'user_session/add_metric'
 
@@ -9,23 +13,26 @@ Rails.application.routes.draw do
 
   get 'user_session/define_event'
   get 'user_session/chart'
+  get 'reviews/chart'
 
   get 'user_session/refresh'
-  get 'user_session/show_unit_display'
-  get 'user_session/filter_table_rows'
+  get 'duser_metrics/show_unit_display'
+  get 'duser_metrics/filter_table_rows'
   post 'user_session/home', to: 'user_session#changes'
-  post 'user_session/create', to: 'user_session#create'
-  post 'user_session/edit', to: 'user_session#edit'
+  post 'duser_metrics/create', to: 'duser_metrics#create'
+  post 'duser_metrics/edit', to: 'duser_metrics#edit'
   post 'user_session/delete', to: 'duser_metrics#destroy'
-  post 'duser_metrics', to: 'user_session#create'
+  post 'duser_metrics', to: 'duser_metrics#create'
 
   patch 'duser_metrics/save_duser_metric_table'
   get 'duser_metrics/chart'
   delete 'duser_metrics/destroy'
 
-  resources :duser_metrics, :except => [:create]
+  #resources :duser_metrics, :except => [:create]
+  resources :duser_metrics
   resources :units
   resources :metrics
+  resources :reviews
   #devise_for :dusers, contro
   #get ':controller/:action/:occur_dttm/:duser_id/:metric_id'
   #get "duser_metrics/:id" => "duser_metrics#show", :as => :duser_metrics

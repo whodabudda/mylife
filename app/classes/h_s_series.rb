@@ -1,10 +1,18 @@
 
 class HSSeries
   attr_accessor :theMetric, :current_user, :stddev
+        attr_accessor :dataset, :stddev, :mean
+        attr_reader :event
     def initialize(mrec, current_user) 
+        @event = mrec.series_type == 'event' ? true : false
         @theMetric = mrec
         @current_user = current_user
-        @dataset = DuserMetric.select(:id, :occur_dttm, :value).for_duser(@current_user).for_series(@theMetric.id).order(occur_dttm: :asc)
+        if dataset.nil?
+            @dataset = DuserMetric.select(:id, :occur_dttm, :value).for_duser(@current_user).for_series(@theMetric.id).order(occur_dttm: :asc)
+        else
+            @dataset = dataset
+        end
+
         @chartSeries = {}
         @stddev = 0
         @mean = 0
@@ -12,13 +20,18 @@ class HSSeries
         #we will display events as a scatter chart and show only their position as the stddev for all points 
         #
 
-        if theMetric.series_type == 'event'
+        if event?
             #select_all returns an array of ActiveRecord::Results. 
             #Need to change it to an arry of result hashes, then get the value of the hash, in this case
             #just the first hash.  There will only be one record returned by query if there are charts for
             #this duser/metric pair.
            @stddev =  DuserMetric.connection.select_all("select stddev(value) from duser_metrics where duser_id = #{@current_user} and metric_id = #{theMetric.id}").to_a[0].values[0]
            @mean =  DuserMetric.connection.select_all("select avg(value) from duser_metrics where duser_id = #{@current_user} and metric_id = #{theMetric.id}").to_a[0].values[0].to_f
+           #
+           #TODO: the following sql works as well and is a little more readable.  Switch over and test.
+           #
+           #DuserMetric.connection.select_all("select stddev(value) from duser_metrics where duser_id = 2 and metric_id = 6").first["stddev(value)"]
+           #
         end
         setSingleValues
         setDataValues
@@ -27,7 +40,7 @@ class HSSeries
         @chartSeries
     end
 
-    # add an object to the array
+    # add series options to hash
     def setSingleValues
         @chartSeries[:name] = theMetric.name
         @chartSeries[:id] = theMetric.name
@@ -35,18 +48,26 @@ class HSSeries
         @chartSeries[:type] = (theMetric.series_type == 'metric' ? 'line' : 'scatter')
         @chartSeries[:yAxis] = "events" if theMetric.series_type == "event" 
     end
-    def setDataValues
+
+    def getDataArray
         values = []
         @dataset.each do |rec| 
           values.push ( formatPoint(rec))
         end
-        @chartSeries[:data] =  values
+        values
     end
+    # add an array of series data points to the hash. The hash key is ':data' and its value is the array of points
+    def setDataValues
+        @chartSeries[:data] =  getDataArray
+    end
+
+    #format the point data for highcharts to use. The datetime is stored in seconds and needs to be converted
+    #to milliseconds for highcharts. stddevCount will change the value to a standard deviation if the 
+    #metric type is an 'event'
     def formatPoint(rec)
       return {"id": rec.id, "x": rec.occur_dttm.to_i * 1000, "y": stddevCount(rec.value), "myData": rec.value}
-#      return [rec.occur_dttm.to_i * 1000,rec.value]
-#          return {"id": rec.id, "x": rec.occur_dttm.to_i * 1000, "y": rec.value, "myData": rec.value}
     end
+
     # if the series is an event type, calculate how many stddev's this value is away from the mean
     # See https://www.statisticshowto.com/wp-content/uploads/2013/08/CALCULATE-A-Z-SCORE-2.jpg
     def stddevCount(v)
@@ -59,13 +80,7 @@ class HSSeries
      return v
     end
 
-    def remove
+    def event?
+        return event
     end
-    def toggleDisplay
-    end
-    # will be either a metric or an event type of series,  which in turn determines the subclass of HSPoint
-    def type 
-    end
-
-
 end

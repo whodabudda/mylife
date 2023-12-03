@@ -19,16 +19,30 @@ class UserSessionController < ApplicationController
     @displayed_series = DuserMetric.for_duser(current_duser.id).order(occur_dttm: :asc)
    # respond_with (@displayed_series)
    # render :home if stale?(@displayed_series)
-    respond_to do |format|
-      format.html {render :home , locals:{displayed_series: @displayed_series}}
-    end
+  Rails.logger.info "Found #{@displayed_series.count} metrics charted. value of none is: #{@displayed_series.none?}"
+   respond_to do |format|
 
-  end
+    format.html do 
+     if @displayed_series.none? 
+        #@displayed_series = Array.new
+        dm = DuserMetric.new
+        dm.duser_id = current_duser.id 
+        dm.metric_id = Metric.auth_to_view( current_duser.id).last.id 
+        dm.value = 100
+        dm.occur_dttm = DateTime.now
+        dm.save
+        @displayed_series = DuserMetric.for_duser(current_duser.id).order(occur_dttm: :asc)
+       flash[:notice] = "You have not charted any metrics."
+      flash[:notice] << " One has been added for you. Please feel free to change it,"
+      flash[:notice] << " and use it as a starting point for your charting." 
+     end
+     render :home , locals:{displayed_series: @displayed_series}
+    end
+ end 
+end
   def chart
     Rails.logger.info "in: #{params[:controller]} : #{params[:action]}  for user: " + current_duser.id.to_s
     #Rails.logger.info "in: #{params[:controller]} : #{params[:action]}  view_context: " + view_context.inspect
-    @chart_var = HSChartMgr.new(current_duser.id)
-    @chart_var.chart_title_text = "this is my new title"
     @chart_mgr = HSChartMgr.new(current_duser.id)
     @chart_mgr.chart_title_text = current_duser.username.to_str + "s Biometric Chart"
     #responding with javascript that will be displayed raw.

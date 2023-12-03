@@ -7,20 +7,21 @@
     <tr>
       <th>Name</th>
       <th>Displ name</th>
-      <th>Duser</th>
-      <th colspan="3"></th>
+      <th colspan="2"></th>
     </tr>
   </thead>
 
   <tbody>
     <% @units.each do |unit| %>
       <tr>
+        <% auth = Duser.auth?(unit.duser_id, current_duser.id) %>
         <td><%= unit.name %></td>
         <td><%= unit.displ_name %></td>
-        <td><%= unit.duser %></td>
-        <td><%= link_to 'Show', unit %></td>
-        <td><%= link_to 'Edit', edit_unit_path(unit) %></td>
+        <%if auth %>
+        <td><%#= link_to 'Show', unit %></td>
+        <td><%= link_to 'Edit', edit_unit_path(unit), remote: true%></td>
         <td><%= link_to 'Destroy', unit, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <%end%>
       </tr>
     <% end %>
   </tbody>
@@ -28,4 +29,4 @@
 
 <br>
 
-<%= link_to 'New Unit', new_unit_path %>
+<%= link_to 'New Unit', new_unit_path , remote: true%>

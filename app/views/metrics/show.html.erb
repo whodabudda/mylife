@@ -12,14 +12,23 @@
 
 <p>
   <strong>Duser:</strong>
-  <%= @metric.duser_id %>
-	<strong>Is System User?:</strong>
-	<%= Duser.system_user?(current_duser.id) %>
+  <%= @metric.duser.username%>
+  <% if Duser.system_user?(current_duser.id) %>
+	 <strong>Warning!! You are the System User:</strong>
+  <%end%>
 </p>
 
 <p>
   <strong>Unit:</strong>
-  <%= @metric.unit_id %>
+  <%= @metric.unit.displ_name %>
+</p>
+<p>
+  <strong>Type:</strong>
+  <%= @metric.series_type %>
+</p>
+<p>
+  <strong>Color:</strong>
+  <span style="color: <%= @metric.series_color %> "> <%= @metric.series_color %> </span>
 </p>
 
 <%= link_to 'Edit', edit_metric_path(@metric) %> |

@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  metric_id: one
+  event_id: 
+  user_id: one
+  start_dt: 2023-01-14
+  end_dt: 2023-01-14
+  span: 1
+  significant: false
+
+two:
+  metric_id: two
+  event_id: 
+  user_id: two
+  start_dt: 2023-01-14
+  end_dt: 2023-01-14
+  span: 1
+  significant: false

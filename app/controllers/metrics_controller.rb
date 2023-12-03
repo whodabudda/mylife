@@ -5,11 +5,11 @@ class MetricsController < ApplicationController
   before_action :set_metric, only: [:show, :edit, :update, :destroy]
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   rescue_from NotAuthorized, with: :not_authorized
-  #rescue ActionController::RedirectBackError redirect_to root_path 
+  #rescue from ActionController::RedirectBackError with: :some_redirect_def 
   # GET /metrics
   # GET /metrics.json
   def index
-    @metrics = Metric.where("duser_id = ?",current_duser.id)
+    @metrics = Metric.auth_to_view(current_duser.id)
   end
 
   # GET /metrics/1
@@ -20,6 +20,7 @@ class MetricsController < ApplicationController
   # GET /metrics/new
   def new
     @metric = Metric.new
+    @metric.duser_id = current_duser.id
   end
 
   # GET /metrics/1/edit
@@ -33,11 +34,14 @@ class MetricsController < ApplicationController
 
     respond_to do |format|
       if @metric.save
-        format.html { redirect_to @metric, notice: 'Metric was successfully created.' }
+        format.html { redirect_back fallback_location: root_path, notice: 'Metric was successfully created.' }
         format.json { render :show, status: :created, location: @metric }
       else
+        #format.js {render :js => "window.location.href='"+new_metric_path+"'", remote: true} 
+        #format.js {redirect_to @metric, :new_metric_path}
         format.html { render :new }
-        format.json { render json: @metric.errors, status: :unprocessable_entity }
+        format.js
+       # format.json { render json: @metric.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -47,10 +51,11 @@ class MetricsController < ApplicationController
   def update
     respond_to do |format|
       if @metric.update(metric_params)
-        format.html { redirect_to @metric, notice: 'Metric was successfully updated.' }
+        format.html { redirect_back fallback_location: root_path , notice: 'Metric was successfully updated.' }
         format.json { render :show, status: :ok, location: @metric }
       else
         format.html { render :edit }
+        format.js
         format.json { render json: @metric.errors, status: :unprocessable_entity }
       end
     end
@@ -78,11 +83,11 @@ class MetricsController < ApplicationController
     end
     def not_authorized
       flash[:notice] = "You don't have access to this record."
-      redirect_to :back
+      redirect_back(fallback_location: root_path)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def metric_params
-      params.require(:metric).permit(:name, :description, :duser_id, :unit_id,:series_color)
+      params.require(:metric).permit(:name, :description, :duser_id, :unit_id,:series_color,:series_type)
     end
 end

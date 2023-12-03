@@ -1,0 +1,200 @@
+
+<%   require_dependency('h_s_series_base') %>
+<%   require_dependency('h_s_series_regression') %>
+
+<% if false %>
+<%=  Rails.logger.info "We made it into the show_regression.js.erb file" %>
+<%=  Rails.logger.info "Chart name is: #{ @chart_mgr.chart_title_text} " %>
+<% @review = (@tempreview.nil? ?  @review : @tempreview )%>
+<%  end %>
+
+<%# @chartSeries = (@chartSeries.nil? ?  nil : @chartSeries )%>
+<%=  Rails.logger.info "ShowRegression.js_erb Review is:  #{ @review.inspect} " %>
+<%=  Rails.logger.info "ShowRegression.js_erb chartSeries is:  #{ @chartSeries.inspect} " %>
+//
+// a tempreview variable will not have an id, thereby has not been persisted. This will be the case when
+// the review/home page is loaded and new data are typed into the sidebar fields.
+// A review variable can have an id.  It could have come from selecting a previous review from the database,
+// or from saving a new review and continuing to work/refine the parameters in the sidebar.
+//
+
+<% if @review.valid? %>
+<%# @chartSeries = HSSeriesRegression.new(@review) %>
+  /*
+Formats a JavaScript date timestamp (milliseconds since Jan 1st 1970) into a human readable date string. The available format keys are listed below. Additional formats can be given in the Highcharts.dateFormats hook.
+    %a: Short weekday, like 'Mon'
+    %A: Long weekday, like 'Monday'
+    %d: Two digit day of the month, 01 to 31
+    %e: Day of the month, 1 through 31
+    %w: Day of the week, 0 through 6
+    %b: Short month, like 'Jan'
+    %B: Long month, like 'January'
+    %m: Two digit month number, 01 through 12
+    %y: Two digits year, like 09 for 2009
+    %Y: Four digits year, like 2009
+    %H: Two digits hours in 24h format, 00 through 23
+    %k: Hours in 24h format, 0 through 23
+    %I: Two digits hours in 12h format, 00 through 11
+    %l: Hours in 12h format, 1 through 12
+    %M: Two digits minutes, 00 through 59
+    %p: Upper case AM or PM
+    %P: Lower case AM or PM
+    %S: Two digits seconds, 00 through 59
+    %L: Milliseconds (naming from Ruby)
+*/
+      var chart1; // globally available
+      var prev_days; // globally available
+      //
+      //function to format date as the number of weeks from the beginning of the year
+      //
+      Highcharts.dateFormats.W = function (timestamp) {
+        var date = new Date(timestamp)
+        var weeks = Math.floor(
+          (
+          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) 
+           - Date.UTC(date.getFullYear(), 0, 0)
+          ) 
+           / (24* 60 * 60 * 1000) //milliseconds in a day
+           / 7                    //seven days in a week
+        );  //end Math.floor
+        return weeks;
+      };
+
+      Highcharts.dateFormats.Days = function (timestamp) {
+        var date = new Date(timestamp)
+ 
+        var days = Math.floor(
+          (
+          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) 
+           - Date.UTC(date.getFullYear(), 0, 0)
+          ) 
+           / (24* 60 * 60 * 1000) //milliseconds in a day
+                               //seven days in a week
+        );  //end Math.floor
+        return days;
+      };
+
+      Highcharts.dateFormats.x = function (timestamp) {
+        var date = new Date(timestamp)
+ 
+        return (date.getMonth()+1) + "-" + date.getDate() + "-" + date.getFullYear();
+      };
+
+$(function () {
+      chart1 = Highcharts.chart('highchart_regression_chart', {
+
+        plotOptions: {
+	        scatter: {
+	        // shared options for all scatter series
+		        marker: {
+	            symbol: "triangle",
+	            enabled: true, 
+	            radius: 6, 
+        	    }, 
+        	},
+        },
+         title: {
+            text: 'Regression Chart'  //todo: get this from a variable
+         },
+
+        chart: {
+        // zoomType: 'xy',  //zoom both axis
+         panning: false,   //allow user to scroll horizontally using the shift key
+         panKey: 'shift',
+         alignTicks: false,
+         marginLeft: 40,  // Keep all charts left aligned
+         spacingTop: 20,
+         spacingBottom: 20,
+         renderTo: "highchart_regression_chart",
+         type: 'scatter',
+        },
+
+        tooltip: {
+          crosshairs: true,
+          shared: false,
+          formatter: function() {
+//            var line1 = Highcharts.dateFormat('%a, %b %e %Y %H:%M', new Date(this.point.x));
+            var line1 = (' <br>' + this.series.name);
+            
+            if(typeof this.point.myData !== "undefined") {
+              line1  + '<b>:' + this.point.myData + '</b>';
+              line1 += ('<br>Value: ' + this.point.x + '/' + this.point.y );
+            }
+            return line1;       
+          } //formatter function
+        },  //tooltip
+          
+        xAxis: {
+          id: "event",
+          title: {
+             // text: <%#=@chartSeries.event.name%>
+              text: '<%= @review.event.name %>'
+          },
+          labels: {
+            rotation: -30, //put a 30 degree slant on the xaxis labels
+            allowOverlap: false
+	        }, //end xaxis.labels
+          zoomEnabled: false,
+          crosshair: true
+        }, //xaxis
+
+        yAxis: 
+        {
+          id: "metric",
+          title: {
+            text: '<%= @review.metric.name %>'
+          },
+          labels:
+          {
+            rotation: -30, //put a 30 degree slant on the xaxis labels
+            allowOverlap: false
+          }, //end xaxis.labels
+          enabled: true,
+          opposite: true,
+          minRange: 0,
+          maxRange: 300,
+          zoomEnabled: false
+        },
+        //define series in the chart options first as an empty array, then add each series 
+        //as an array element from the JSON datasets
+        series: []
+    });   //highchart mychart
+
+    //console.log("Array Length: " )
+    //
+    //chart_mgr.all_series returns an array of HSSeries objects
+    //loop through this array.
+    //  HSSeries.write will return a hash of the values for the series
+    //  parse hash into JSON and add it to Highcharts as a series
+    //
+
+      //  var series = JSON.parse('<%#= raw ser.write.to_json %>')
+      <% if !@chartSeries.nil? and @chartSeries.valid? %>
+        var reg_series = JSON.parse('<%= raw @chartSeries.write.to_json %>')
+        var reg_series_line = JSON.parse('<%= raw @chartSeries.getRegValues.to_json %>')
+        console.log(reg_series)
+        console.log(reg_series_line)
+        chart1.addSeries(reg_series)
+        chart1.addSeries(reg_series_line)
+        chart1.reflow()
+        //
+        //
+        //document.getElementById("review-info").replaceWith("<%= j ("#{render partial: 'chart_info', locals: {  chartSeries: @chartSeries}}").html_safe %>");
+        document.getElementById("review-info").innerHTML =  ("<%= j ("#{render partial: 'chart_info', locals: {  chartSeries: @chartSeries, chart_active: true }}").html_safe %>")
+        document.getElementById("review-error").innerText = '';
+      <%else%>
+        // document.getElementById("review-error").value = <%#= @chartSeries.error_msg %>;
+         document.getElementById("review-info").innerHTML = '';
+         document.getElementById("review-error").innerText = '<%= @chartSeries.error_msg %>';
+         console.log("changed review-error")
+      <% end %>
+
+    //
+    //adds the series to the chart, along with all series options
+    //the options are different for events vs metrics.  
+    //Events are charted as STD DEV points in a scatter graph, but the actual values are 
+    //included as data and displayed in the Tooltip
+    //
+
+});  //function
+<%end%>

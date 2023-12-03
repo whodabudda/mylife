@@ -1,0 +1,5 @@
+//$("#duser-metric-modal").html("<%#= escape_javascript(render 'edit') %>")
+//$("#duser-metric-modal").modal("show")
+
+$("#modal-holder").html("<%= escape_javascript(render template: 'duser_metrics/edit.html.erb', layout: 'layouts/modal') %>")
+$('#exampleModal').modal("show")

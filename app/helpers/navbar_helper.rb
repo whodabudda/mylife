@@ -7,6 +7,7 @@ module NavbarHelper
 		 else
 		  @log_str = link_to('Please Sign-Up or sign-In', new_duser_session_path, class: "navbar-link")
 		end
-		return raw '<p class="navbar-text navbar-right">' + @log_str + '</p>'
+#		return raw '<p class="navbar-text navbar-right">' + @log_str + '</p>'
+		return  @log_str 
     end
 end

@@ -12,14 +12,16 @@
  *
  */
 $enable-flex: true;
-@import "./bootstrap_styles.scss";
+@import "./welcome";
+@import "./user_session";
+@import "./jquery.datetimepicker";
+@import "./scaffolds";
+@import "../../../node_modules/bootstrap/scss/bootstrap";
+//@import "./treeLinks";
+//@import "./bootstrap_styles.scss";
 //@import "./devise";
 //@import '../images/elaine_thomas_1.png';
-@import "./welcome";
-@import "./dusers";
-@import "./duser_metrics";
-@import "./jquery.datetimepicker";
-@import "./metrics";
-@import "./scaffolds";
-@import "./units";
-@import "./user_session";
+//@import "./dusers";
+//@import "./duser_metrics";
+//@import "./metrics";
+//@import "./units";

@@ -1,0 +1,14 @@
+<% if @metric.errors.any? %>
+  // Handle errors and update the modal form
+  var errorsHtml = "<ul>";
+  <% @metric.errors.full_messages.each do |message| %>
+    errorsHtml += "<li><%= j message %></li>";
+  <% end %>
+  errorsHtml += "</ul>";
+
+  $('#modal-error-messages-container').html(errorsHtml);
+<% else %>
+  // Close the modal or perform any other actions for success
+  $('#exampleModal').modal("close")
+
+<% end %>

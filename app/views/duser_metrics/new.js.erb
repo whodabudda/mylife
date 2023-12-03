@@ -1,2 +1,2 @@
-$("#duser-metric-modal").html("<%= escape_javascript(render 'new') %>")
-$("#duser-metric-modal").modal("show")
+$("#modal-holder").html("<%= escape_javascript(render template: 'duser_metrics/new.html.erb', layout: 'layouts/modal') %>")
+$('#exampleModal').modal("show")

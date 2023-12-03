@@ -1,0 +1,21 @@
+<% if @review.errors.any? %>
+
+  // Create a list of errors
+  var errors = $('<ul />');
+
+  <% @review.errors.full_messages.each do |error| %>
+    errors.append('<li><%= escape_javascript(error) %></li>');
+  <% end %>
+
+  alert(errors)
+<% else %>
+
+
+  //
+  //If there wasn't an error removing the row in the database, 
+  //  1. remove the row from the table display
+  //  2. remove the point from the chart
+  //
+  $("#tr_review_<%=@review.id%>").remove()
+
+<% end %>

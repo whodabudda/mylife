@@ -1,0 +1,68 @@
+
+<%   require_dependency('h_s_series_base') %>
+<%   require_dependency('h_s_series_regression') %>
+<style>
+/* The sidebar menu */
+.sidenav {
+  height: 80%; /* Full-height: remove this if you want "auto" height */
+ /*  width: 160px; Set the width of the sidebar */
+  position: relative; /* Fixed Sidebar (stay in place on scroll) */
+  z-index: 0; /* Stay on top */
+  top: 0; /* Stay at the top */
+  left: 0;
+  background-color: #f1f1f1; /* Black */
+  /* overflow-x: hidden;  Disable horizontal scroll */
+  padding-top: 20px;
+}
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+  color: blue;
+}
+.review-display { 
+    width: 80%;
+}
+
+</style>
+  <div class="container-fluid">
+
+        <div class="row">
+          <div class="col-12">
+        <% if @review.errors.any? %>
+          <div id="error_explanation">
+           <h2><%= pluralize(@review.errors.count, "error") %> prohibited this review from being saved:</h2>
+
+            <ul>
+              <% @review.errors.each do |error| %>
+                <li><%= error.full_message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+        </div>
+        </div>
+
+        <div class="row"> 
+          <div class="col-lg-2"> <!-- use col-lg-2 so that sidebar and chart stack when window is very small --> 
+               <%= render :partial => "shared/review_sidebar" ,locals: {review: @review}%>
+          </div>
+          <div  class="col-8">
+           <%#= render partial: "chart" ,locals: {review: @review} if @review.valid?%> 
+
+          <div id="review-error" class="alert alert-warning review-display" ></div>
+          <div id="review-chart" class="review-display"> 
+            <%= render partial: "chart" ,locals: {review: @review}%> 
+          </div>
+          <div id="review-info" class="review-display">
+          <%= render partial: "chart_info" ,locals: {chartSeries: @chartSeries}%> 
+          </div>
+          </div>
+          </div>
+  </div>
+
+        <%#=image_tag("Rplot.jpg") %>
+        <%#= image_pack_tag("static/Rplot.jpg") %>
+
+<script>
+  var initialPage = "review_home"; // Assuming @page holds the page identifier
+</script>
+<%# obsolete code saved here in case it needs resurrection %>

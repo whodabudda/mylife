@@ -1,0 +1,3 @@
+#list all the TODO comments.  Replace TODO with what you are looking for
+rails notes -a TODO
+

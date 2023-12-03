@@ -1,0 +1,9 @@
+
+<%= content_for :'modal-title'  do %>
+   Edit Charted Value
+<%end%>
+<%= content_for :'modal-body'  do %>
+<%= render 'form' %>
+<%end%>
+<%= link_to 'Show', @duser_metric %> |
+<%= link_to 'Back', duser_metrics_path %>

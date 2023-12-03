@@ -1,0 +1,83 @@
+
+<%# 
+if @review.nil?
+  #<h3> Hey!, the @review parm is nil </h3>
+  @review = Review.new
+else 
+   review = @review
+ end 
+%>
+<%  post_method = local_assigns.fetch(:post_method, false) %>
+    <!--
+      Bug apparently introduced at Rails 6.x where form_with doesn't create the data-remote attribute
+      consistently, and the way to force it is to say local: false.
+      https://stackoverflow.com/questions/45221800/rails-5-1-2-form-with-is-not-showing-data-remote-true-in-the-html
+    -->
+
+    <% if post_method %>
+    <%= form_with(model: review ) do |form| %>
+
+    <% else %>
+    <%=  form_with(model: review, method: :get, url:  url_for(controller: :reviews, action: :show_regression , id: review.id, ), local: false) do |form|  %>
+    <% end %>
+  <% if review.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(review.errors.count, "error") %> prohibited this review from being saved:</h2>
+
+      <ul>
+        <% review.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+<% Rails.logger.info "review data in form:  #{review.inspect}"%>
+  <div class="form-group" hidden=true>
+    <%= form.label :metric_id , class:"control-label" %>
+    <% @m = Metric.where( " (duser_id = 1 or duser_id = ?) and series_type = ?", current_duser.id, "metric" ) %>
+    <%= collection_select(:review,:metric_id,@m, :id, :name,:selected => review.metric_id,prompt: true) %>
+  </div>
+
+  <div class="field">
+    <%= form.label :event_id %>
+    <% @e = Metric.where( " (duser_id = 1 or duser_id = ?) and series_type = ?", current_duser.id, "event" ) %>
+    <%= collection_select(:review,:event_id,@e, :id, :name,:selected => review.event_id, prompt: true,required: true) %>
+    <%#= select_tag 'Event', options_from_collection_for_select(@e, 'id', 'name',:selected => review.event_id ) %>
+    <%#= collection_select(:metric,:id,@e, :id, :name) %>
+  </div>
+  <div class="field">
+    <%= form.label :duser_id ,hidden: true%><br>
+    <%= form.text_field :duser_id, value: current_duser.id, readonly: true,hidden: true,required: true%>
+  </div>
+
+  <!--  Use date_field instead of date_select because with date_field you get a calendar
+        popup, and date_select incorrectly loads the selection fields when the page is refreshed
+  -->
+  <div class="field">
+    <%= form.label :start_dt %>
+    <%= form.date_field :start_dt,required: true ,onchange: "this.form.requestSubmit()"%>
+  </div>
+
+  <div class="field">
+    <%= form.label :end_dt %>
+    <%= form.date_field :end_dt,required: true %>
+  </div>
+
+  <div class="field">
+    <%= form.label :span %>
+    <%#= form.number_field :span %>
+    <%= select_tag "span", options_for_select([ "24", "48" ,"72" ],review.span ) %>
+  </div>
+
+  <div class="field">
+    <%= form.label :significant %>
+    <%= form.check_box :significant , readonly: true%>
+  </div>
+
+  <% if false %>
+  <div class="actions">
+    <%#= form.submit :create ,hidden: @review.valid? ?  false : true  %>
+    <%#= form.submit 'Save Review' %>
+  </div>
+  <%end%>
+<% end %>

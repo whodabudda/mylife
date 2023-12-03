@@ -1,6 +1,8 @@
-<h1>Editing Unit</h1>
+<%= content_for :'modal-title'  do %>
+   Editing Unit
+<%end%>
+<%= content_for :'modal-body'  do %>
+<%= render "form" %>
+<%end%>
 
-<%= render 'form' %>
-
-<%= link_to 'Show', @unit %> |
 <%= link_to 'Back', units_path %>

@@ -12,6 +12,7 @@ gem "puma", ">= 3.12.2"
 gem 'devise'
 gem 'sassc-rails'
 gem 'coffee-script'
+gem 'rinruby', git: 'https://github.com/clbustos/rinruby' , branch: 'master'
 
 #Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'

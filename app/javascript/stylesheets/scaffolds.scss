@@ -18,6 +18,8 @@ pre {
   font-size: 11px;
 }
 
+/*
+this setting is commented out because it overrides the bg setting on the navigation bar
 a {
   color: #000;
   &:visited {
@@ -28,6 +30,7 @@ a {
     background-color: #000;
   }
 }
+*/
 
 div {
   &.field, &.actions {

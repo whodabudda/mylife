@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_21_172657) do
+ActiveRecord::Schema.define(version: 2023_01_14_202725) do
 
   create_table "active_storage_attachments", charset: "latin1", force: :cascade do |t|
     t.string "name", null: false
@@ -40,11 +40,11 @@ ActiveRecord::Schema.define(version: 2021_02_21_172657) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "duser_metrics", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "duser_metrics", id: :bigint, default: nil, charset: "latin1", force: :cascade do |t|
     t.integer "value", null: false
     t.datetime "occur_dttm", null: false
-    t.integer "duser_id", null: false
-    t.integer "metric_id", null: false
+    t.bigint "duser_id", null: false
+    t.bigint "metric_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["duser_id"], name: "index_duser_metrics_on_duser_id"
@@ -52,15 +52,15 @@ ActiveRecord::Schema.define(version: 2021_02_21_172657) do
   end
 
   create_table "duser_roles", id: false, charset: "latin1", force: :cascade do |t|
-    t.integer "duser_id", null: false
-    t.integer "role_id", null: false
+    t.bigint "duser_id", null: false
+    t.bigint "role_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["duser_id", "role_id"], name: "index_dusers_roles_on_dusers_id_and_roles_id"
     t.index ["duser_id"], name: "index_dusers_roles_on_dusers_id"
   end
 
-  create_table "dusers", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "dusers", id: :bigint, default: nil, charset: "latin1", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -82,34 +82,49 @@ ActiveRecord::Schema.define(version: 2021_02_21_172657) do
     t.index ["reset_password_token"], name: "index_dusers_on_reset_password_token", unique: true
   end
 
-  create_table "metrics", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "metrics", id: :bigint, default: nil, charset: "latin1", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
-    t.integer "duser_id", null: false
-    t.integer "unit_id", null: false
+    t.bigint "duser_id", null: false
+    t.bigint "unit_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "series_color"
+    t.string "series_type", limit: 45, default: "event", null: false
     t.index ["duser_id"], name: "index_metrics_on_duser_id"
     t.index ["unit_id"], name: "index_metrics_on_unit_id"
   end
 
-  create_table "roles", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "reviews", charset: "latin1", force: :cascade do |t|
+    t.bigint "metric_id"
+    t.bigint "duser_id"
+    t.bigint "event_id"
+    t.date "start_dt", null: false
+    t.date "end_dt", null: false
+    t.integer "span"
+    t.boolean "significant"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["duser_id"], name: "index_reviews_on_duser_id"
+    t.index ["event_id"], name: "index_reviews_on_event_id"
+    t.index ["metric_id"], name: "index_reviews_on_metric_id"
+  end
+
+  create_table "roles", id: :bigint, default: nil, charset: "latin1", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "units", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "units", id: :bigint, default: nil, charset: "latin1", force: :cascade do |t|
     t.string "name"
     t.string "displ_name"
-    t.integer "duser_id"
+    t.bigint "duser_id", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["duser_id"], name: "index_units_on_duser_id"
   end
 
-  create_table "users", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "users", id: :bigint, default: nil, charset: "latin1", force: :cascade do |t|
     t.string "first_name", limit: 30, null: false
     t.string "last_name", limit: 50, null: false
     t.date "birthdate"
@@ -118,12 +133,12 @@ ActiveRecord::Schema.define(version: 2021_02_21_172657) do
     t.datetime "updated_at", null: false
     t.string "email", null: false
     t.string "username", null: false
-    t.integer "role_id"
-    t.index ["role_id"], name: "index_users_on_role_id"
+    t.bigint "role_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "units", "dusers"
-  add_foreign_key "users", "roles"
+  add_foreign_key "reviews", "dusers"
+  add_foreign_key "reviews", "metrics"
+  add_foreign_key "reviews", "metrics", column: "event_id"
 end
