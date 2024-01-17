@@ -2,9 +2,13 @@ class MetricsController < ApplicationController
   class NotAuthorized < StandardError
  end
 
-  before_action :set_metric, only: [:show, :edit, :update, :destroy]
+  before_action :set_metric_for_change, only: [:edit, :update, :destroy ]
+  before_action :set_metric_for_view, only: [:show]
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   rescue_from NotAuthorized, with: :not_authorized
+  rescue_from ActiveRecord::RecordNotUnique, with: :not_unique
+  respond_to :html, :json, :js
+
   #rescue from ActionController::RedirectBackError with: :some_redirect_def 
   # GET /metrics
   # GET /metrics.json
@@ -31,7 +35,7 @@ class MetricsController < ApplicationController
   # POST /metrics.json
   def create
     @metric = Metric.new(metric_params)
-
+    raise NotAuthorized unless current_duser.id == @metric.duser_id 
     respond_to do |format|
       if @metric.save
         format.html { redirect_back fallback_location: root_path, notice: 'Metric was successfully created.' }
@@ -73,17 +77,37 @@ class MetricsController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_metric
-        @metric = Metric.find(params[:id])
-        raise NotAuthorized unless (@metric.duser_id == current_duser.id) or (Duser.system_user?(current_duser.id) == true)
+    def set_metric_for_view
+      @metric = Metric.find(params[:id])
+      raise RecordNotFound unless !@metric.nil?
+      raise NotAuthorized unless [Duser.system_user, current_duser.id].include? @metric.duser_id 
     end
- 
+    def set_metric_for_change
+      @metric = Metric.find(params[:id])
+
+      raise RecordNotFound unless !@metric.nil?
+      raise NotAuthorized unless current_duser.id == @metric.duser_id 
+
+      Rails.logger.info "params has duser_id key: #{params.dig(:metric,:duser_id) }"
+      if params.dig(:metric,:duser_id)
+        #Rails.logger.info "params key same as user?: #{params.dig(:metric,:duser_id).to_i == current_duser.id }"
+        raise NotAuthorized unless (params.dig(:metric,:duser_id).to_i == current_duser.id)
+      end
+    end 
     def record_not_found
       render plain: "404 Not Found : no record for id: " #+ @metric.id + " user_id: " + @metric.duser_id, status: 404
     end
     def not_authorized
       flash[:notice] = "You don't have access to this record."
       redirect_back(fallback_location: root_path)
+    end
+    def not_unique(exception)
+      #render plain: "500 #{@metric.name} is already in use " #+ @metric.id + " user_id: " + @metric.duser_id, status: 404
+      #flash[:error] = "This name is already in use"
+      #@metric.errors.add(:name,"SQL error: #{exception.message}")
+      Rails.logger.info "MetricsController.not_unique Errors: #{@metric.errors.full_messages} Database: #{exception.message}  "
+      respond_with @metric
+      #redirect_back(fallback_location: root_path)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

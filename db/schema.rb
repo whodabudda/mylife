@@ -40,7 +40,7 @@ ActiveRecord::Schema.define(version: 2023_01_14_202725) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "duser_metrics", id: :bigint, default: nil, charset: "latin1", force: :cascade do |t|
+  create_table "duser_metrics", charset: "latin1", force: :cascade do |t|
     t.integer "value", null: false
     t.datetime "occur_dttm", null: false
     t.bigint "duser_id", null: false
@@ -60,7 +60,7 @@ ActiveRecord::Schema.define(version: 2023_01_14_202725) do
     t.index ["duser_id"], name: "index_dusers_roles_on_dusers_id"
   end
 
-  create_table "dusers", id: :bigint, default: nil, charset: "latin1", force: :cascade do |t|
+  create_table "dusers", charset: "latin1", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -78,11 +78,12 @@ ActiveRecord::Schema.define(version: 2023_01_14_202725) do
     t.integer "failed_attempts", default: 0, null: false
     t.string "unlock_token"
     t.datetime "locked_at"
+    t.integer "sys_setup_complete", limit: 1, default: 0
     t.index ["email"], name: "index_dusers_on_email", unique: true
     t.index ["reset_password_token"], name: "index_dusers_on_reset_password_token", unique: true
   end
 
-  create_table "metrics", id: :bigint, default: nil, charset: "latin1", force: :cascade do |t|
+  create_table "metrics", charset: "latin1", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
     t.bigint "duser_id", null: false
@@ -92,31 +93,29 @@ ActiveRecord::Schema.define(version: 2023_01_14_202725) do
     t.string "series_color"
     t.string "series_type", limit: 45, default: "event", null: false
     t.index ["duser_id"], name: "index_metrics_on_duser_id"
+    t.index ["name", "duser_id"], name: "index_metrics_on_name", unique: true
     t.index ["unit_id"], name: "index_metrics_on_unit_id"
   end
 
   create_table "reviews", charset: "latin1", force: :cascade do |t|
-    t.bigint "metric_id"
-    t.bigint "duser_id"
-    t.bigint "event_id"
+    t.bigint "metric_id", null: false
+    t.bigint "duser_id", null: false
+    t.bigint "event_id", null: false
     t.date "start_dt", null: false
     t.date "end_dt", null: false
     t.integer "span"
     t.boolean "significant"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["duser_id"], name: "index_reviews_on_duser_id"
-    t.index ["event_id"], name: "index_reviews_on_event_id"
-    t.index ["metric_id"], name: "index_reviews_on_metric_id"
   end
 
-  create_table "roles", id: :bigint, default: nil, charset: "latin1", force: :cascade do |t|
+  create_table "roles", charset: "latin1", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "units", id: :bigint, default: nil, charset: "latin1", force: :cascade do |t|
+  create_table "units", charset: "latin1", force: :cascade do |t|
     t.string "name"
     t.string "displ_name"
     t.bigint "duser_id", default: 1, null: false
@@ -124,7 +123,7 @@ ActiveRecord::Schema.define(version: 2023_01_14_202725) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "users", id: :bigint, default: nil, charset: "latin1", force: :cascade do |t|
+  create_table "users", charset: "latin1", force: :cascade do |t|
     t.string "first_name", limit: 30, null: false
     t.string "last_name", limit: 50, null: false
     t.date "birthdate"
@@ -138,7 +137,4 @@ ActiveRecord::Schema.define(version: 2023_01_14_202725) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "reviews", "dusers"
-  add_foreign_key "reviews", "metrics"
-  add_foreign_key "reviews", "metrics", column: "event_id"
 end

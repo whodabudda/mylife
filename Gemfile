@@ -23,6 +23,8 @@ gem 'jbuilder', '~> 2.5'
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
+  gem 'factory_bot_rails'
+  gem 'pry-rails'
 end
 
 group :development do
@@ -34,6 +36,17 @@ group :development do
   # Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+end
+
+group :test do
+  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem "capybara"
+  gem "selenium-webdriver"
+  gem "webdrivers"
+  gem 'faker', '~> 2.20', group: :test
+  gem 'rails-controller-testing'
+  gem 'minitest-rails'
+  gem 'minitest-hooks'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

@@ -65,3 +65,5 @@ window.Highcharts = Highcharts;
 import "social-share-button"
 import datetimepicker from "jquery-datetimepicker"
 import "mylife"
+
+const images = require.context('../images', true)

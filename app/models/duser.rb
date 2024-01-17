@@ -8,6 +8,9 @@ class Duser < ActiveRecord::Base
 	has_many :reviews , dependent: :delete_all
 	#scope :for_duser, ->(pduser_id) { where("duser_id = ?",pduser_id) }
 
+	#email is already validated for uniqueness by Devise
+	validates :username, presence: true, uniqueness: { case_sensitive: false }
+	
 	@SystemUser = 1
   	#before_create :set_default_role
 	before_save :check_username
@@ -35,12 +38,12 @@ class Duser < ActiveRecord::Base
  	private
 
 	def set_default_role
-	    self.role ||= Role.find_by_name('user')
+	    self.role ||= Role.find_by_name('duser')
 	end
 
 	def check_username
-		if self.username == ""
-			self.username = self.email
-		end
+	 self.username = self.email if self.username.blank? && new_record?
+	#self.username = self.email if self.username.nil? || self.username.blank?
+
 	end
 end
