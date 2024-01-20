@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_14_202725) do
+ActiveRecord::Schema.define(version: 2024_01_17_000000) do
 
   create_table "active_storage_attachments", charset: "latin1", force: :cascade do |t|
     t.string "name", null: false
@@ -92,6 +92,7 @@ ActiveRecord::Schema.define(version: 2023_01_14_202725) do
     t.datetime "updated_at", null: false
     t.string "series_color"
     t.string "series_type", limit: 45, default: "event", null: false
+    t.boolean "visible", default: true
     t.index ["duser_id"], name: "index_metrics_on_duser_id"
     t.index ["name", "duser_id"], name: "index_metrics_on_name", unique: true
     t.index ["unit_id"], name: "index_metrics_on_unit_id"

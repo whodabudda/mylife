@@ -45,6 +45,7 @@ class HSSeries
         @chartSeries[:name] = theMetric.name
         @chartSeries[:id] = theMetric.name
         @chartSeries[:color] = theMetric.series_color
+        @chartSeries[:visible] = (theMetric.visible ? true : false)
         @chartSeries[:type] = (theMetric.series_type == 'metric' ? 'line' : 'scatter')
         @chartSeries[:yAxis] = "events" if theMetric.series_type == "event" 
     end

@@ -22,7 +22,7 @@ class HSChartMgr
       #
       #Get all charted metrics defined by the system or this user
       #
-      @metrics = Metric.select(:id,:name,:series_color,:series_type).where(id: DuserMetric.select("metric_id").where("duser_id = ? or duser_id = 1 ",@current_user ))
+      @metrics = Metric.select(:id,:name,:series_color,:series_type,:visible).where(id: DuserMetric.select("metric_id").where("duser_id = ? or duser_id = 1 ",@current_user ))
       #
       #For each defined metric, get the users's charted values for that metric 
       #TODO Add ability for use to select which metrics they want to be active when chart is first displayed.

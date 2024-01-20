@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   post 'duser_metrics/edit', to: 'duser_metrics#edit'
   post 'user_session/delete', to: 'duser_metrics#destroy'
   post 'duser_metrics', to: 'duser_metrics#create'
+  post 'user_session/toggle_metric_visible', to: 'metrics#toggle_metric_visible'
 
   patch 'duser_metrics/save_duser_metric_table'
   get 'duser_metrics/chart'

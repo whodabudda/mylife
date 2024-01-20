@@ -29,6 +29,10 @@
     <%= f.text_field :series_color, type: :color %>
   </div>
   <div class="field">
+    <%= f.label :visible %><br>
+    <%= f.check_box :visible %>
+  </div>
+  <div class="field">
     <%= f.label :unit_id %><br>
     <% @m = Unit.where( " duser_id = 1 or duser_id = ?", current_duser.id ) %>
     <%=f.collection_select(:unit_id, @m, :id, :name, required: true) %>

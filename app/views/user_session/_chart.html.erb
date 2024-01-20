@@ -7,10 +7,10 @@
     <%=  date_field("chart", "todate") %>
 </div>
 <%=
- link_to 'my link', user_session_chart_path, remote: true ,hidden: true, id: "show-chart"
+ link_to 'my chart link', user_session_chart_path, remote: true ,hidden: true, id: "show-chart"
+ #link_to 'toggle visibility of charted metric', toggle_metric_visible_path, remote: true ,hidden: true, id: "toggle-metric-visible"
 %>
   <%#= raw @highchart_js %>
-
 <script type="text/javascript">
 //  var showChart = function() {
 

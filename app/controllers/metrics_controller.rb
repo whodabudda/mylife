@@ -21,6 +21,33 @@ class MetricsController < ApplicationController
   def show
   end
 
+  #When in highcharts and the user toggles one of the metrics, it will create a legendItemClick event that
+  #we capture in chart.js.erb.  We perform an ajax call from there to this action in order to set the visible
+  #column in the database. In this way, however the user left the chart, that is how they will see it again 
+  #when it re-populates.  i.e. we save the preferences without the user having to take additional action.
+  def toggle_metric_visible
+    name = params[:name]
+    @metric = Metric.where(name: name, duser_id: [current_duser.id, Duser.system_user])
+    @metric.count == 1 ? @metric = @metric.first : @metric = nil
+    #TODO - figure out a good way to return early without the multiple render errors.
+    if @metric.nil?
+      Rails.logger.info "MetricsController::toggle_metric_visible-> metric is: #{@metric}"
+    end
+    if @metric.visible?
+      @metric.visible = false
+    else
+      @metric.visible = true
+    end
+    #we do this ajax call from javascript, so we're not really updating the rest of the view.
+    respond_to do |format|
+      if @metric.save
+        format.json { head :ok }
+      else
+        format.json { head :unprocessable_entity  }
+      end
+    end
+  end
+
   # GET /metrics/new
   def new
     @metric = Metric.new
@@ -112,6 +139,6 @@ class MetricsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def metric_params
-      params.require(:metric).permit(:name, :description, :duser_id, :unit_id,:series_color,:series_type)
+      params.require(:metric).permit(:name, :description, :duser_id, :unit_id,:series_color,:series_type,:visible)
     end
 end

@@ -80,6 +80,7 @@ $(function () {
 //            width: 30
            } 
         },
+
         line: {
         marker: {
             symbol: "circle",
@@ -87,9 +88,63 @@ $(function () {
             radius: 3, 
 //            height: 20,
 //            width: 30
-           } 
-        }
+           },
         },
+        series: {
+          events: {
+           legendItemClick(e) {
+             e.preventDefault();
+             console.log("Plotoptions evt: ", e);
+             //
+             //Almost all the data for the legend item selected will be in the event attribute
+             //named <event>.target.userOptions
+             //
+             let metric_name = e.target.userOptions.name
+             console.log("Plotoptions series name: ", metric_name);
+             //alert("chart plotOptions")
+             let chart = this.chart;
+             //console.log("event this: ", this);
+             //console.log("event chart: ", chart);
+
+             //
+             //TODO - probably don't really have to loop through the series since we have the name
+             //of the one that was actually clicked, but it evolved this way
+             //and its working.  May refactor later.
+             //
+             chart.series.forEach(s => {
+                 console.log("event series: ", s);
+                 if (s.name == metric_name) {
+                    data = { name: s.name}
+                    //csrfToken = document.querySelector("[name='csrf-token']")
+                    csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+                    fetch("toggle_metric_visible", {
+                        method: 'POST',
+                        headers:  {
+                          "X-CSRF-Token": csrfToken,
+                          "Content-Type": "application/json",
+                          "Accept": "application/json"
+                        },
+                        body: JSON.stringify(data)
+                      });
+                    //
+                    //capturing the event can stop Highcharts internal processing of the event. Therefore,
+                    //explicitly toggle the series display.
+                    //
+                    if (s.visible) {
+                        s.hide();
+                    }
+                    else {
+                        s.show();
+                    }
+                     // s.hide();
+                     // } else {
+                     // s.show();
+                 }
+             })
+           }
+         }  //events
+        },  //series
+        }, //plotoptions
 
         chart: {
          zoomType: 'xy',  //zoom both axis
@@ -100,7 +155,29 @@ $(function () {
          spacingTop: 20,
          spacingBottom: 20,
          maxZoom: 5 * 24 * 3600000,
-         renderTo: "highchart_mychart"
+         renderTo: "highchart_mychart",
+         /*
+        events: {
+          load: function() {
+           //alert("Chart load event");
+           document.querySelector("#mychartlabel").innerHTML = `Load event fired`
+            },
+           legendItemClick: function(event) {
+            alert("Chart legend event:");
+            },
+          render: function() {
+           alert("Chart render event");
+           let series = this.series, count = 0;
+                    
+           series.forEach(serie => {
+            if (serie.visible) {
+             count++
+            }
+           })
+           document.querySelector("#mychartlabel").innerHTML = `Total visible series: ${series}`
+          }
+      },
+*/
         },
         rangeSelector: {  //the from/to date input fields that set xdata range
           //selected: 1,
