@@ -36,11 +36,14 @@ class DuserMetricsController < ApplicationController
   end
   def filter_table_rows
     Rails.logger.info "Params: #{params}"
-    Rails.logger.info "filter_table_rows: #{params[:metric]}"
-    Rails.logger.info "filter_table_rows: #{params[:metric][:id]}"
+    #Rails.logger.info "filter_table_rows: #{params[:metric]}"
+    #Rails.logger.info "filter_table_rows: #{params[:metric][:id]}"
     @m_id = 0
-    if  ! params[:metric][:id].empty? 
-      @m_id =  params[:metric][:id].to_i 
+    #if  ! params[:metric][:id].empty? 
+    #  @m_id =  params[:metric][:id].to_i 
+    #end
+    if  ! params[:id].empty? 
+      @m_id =  params[:id].to_i 
     end
     respond_with @metric 
   end
