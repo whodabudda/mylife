@@ -54,42 +54,53 @@ en:
          the pre-configured Metrics in the system).  Then if you want to see what effect some activities have on your blood pressure,
         those are considered 'Events'.  Events could be anything from eating a salty meal, jogging for an hour, going to the Gym, or even 
         sitting around doing nothing.  When you chart a Metric or Event, you need only assign a value, and if necessary adjust the date 
-        and time that it occured.
+        and time that it occured.  All values must be a positive integer.  Thus, all units must be able to be expressed as a positive integer.
+
         <ul/>
-        It is helpful to view the number associated with an Event or Metric in terms of their Units.  Blood pressure is always 
+        It is helpful to view the number associated with an Event or Metric in terms of their Units. Blood pressure is always 
         understood in terms of atmospheric pressure, or milligrams of mercury (mm).  Any event that doesn't have a 
         standard unit should have one defined for it that makes sense to you.  For example, sleep.  You may want to define your
         quality of sleep as a scale of 1 to 10 ("1 <> 10").  
+
         <ul/>
         You can define your own Metrics/Events, and Units.  They can't be the same names as the pre-configured ones.  Select
         the 'Manage Content -> Metrics' menu.  The pre-configured Metrics are listed first.  You cannot change these. Whatever 
         Metrics you define will be listed under these, and will have an Edit and Destroy link under the Actions heading.
+
         <ul/>
         To create a new Metric/Event, use the 'New Metric' link under the list of Metrics.
+
         <ul/>
         The same design appears for the 'Manage Content -> Units' menu.
+
         <ul/>
-        One last comment on creating Metrics and Events.  They are both confusingly called Metrics, but are differentiated under the 'Type' heading.
-        There can be a grey area around Metrics and Events, where something you measure can also be something that happens. 
-        For example Pain.  It can be something you measure against going to the Gym, and can also me something that causes 
-        your blood pressure to rise.  
+        One last comment on creating Metrics and Events.  They are both confusingly called Metrics, but are differentiated under
+         the 'Type' heading. There can be a grey area around Metrics and Events, where something you measure can also be 
+         something that affects that measurement. For example Pain.  It can be something you measure against the event of going to the Gym,
+         but can also be something that affects your blood pressure,
      "placeholder4":
        heading: Charting
        text: >
         To add data points, use the table at the top of the Home page.  
         The table has columns for Metric, Value, Units, Datetime, and then 3 links for deleting, editing, and copying the row.
+
         <ul/>
         The easiest way to add a point is to use the '+' icon. That creates a new row identical to the row you were on. You can 
-        then change the Metric and Value to be the new point you want to add.
+        then change the Metric and Value to be the new point you want to add. Don't forget to change the date to the datetime the Metric
+        new point actually occured.
+
         <ul/>
         The pencil icon for editing will bring up a form window for editing the fields, but I think its easier to just edit
         them in place.
+
         <ul/>
         Metric has a drop-down list to choose from.  Units are filled in automatically.  The Value is self-explainatory, but 
-        it should make sense in the context of the Metric.  Very large numbers can throw the chart off if the charting item is
+        it should make sense in the context of the Metric.  As stated earlier, it must be a positive integer. 
+        Very large numbers can throw the chart off if the charting item is
         defined as Metric (as opposed to Event).  Metrics are displayed as lines on the graph.  Events are displayed as icons.  Hover over the icon to
         see the actual value, however for charting purposes, we display the Event as its Standard Deviation for all charted values
         of that event.
+
         <ul/>
         If it looks like the chart is not in synch with the table, use the 'Refresh Chart' button.
 
@@ -114,10 +125,8 @@ en:
         To do that, go to the 'Analysis' menu.
 
         <ul/>
-        There you will see that last Regression Chart that you saved.
+        If you saved any past regressions, it will come up on the screen. Otherwise, you will just see the input fields.
 
-        <ul/>
-        This chart is a Regression calculation based on the the data points of the chosen Metric and Event over the same time period
         <ul/>
         The Metric is the 'dependant' variable, and is the coordinate on the Y axis (vertical).  The Event is the X variable and listed
         the coordinate on the X axis (horizontal).  
@@ -127,14 +136,15 @@ en:
         that indicates the proximity you want for these two coordinates.  
 
         <ul/>
-        For example, ;you want to see a regression for how your jogging affects blood pressure from June to December, where the 
+        For example, you want to see a regression for how your jogging affects blood pressure from June to December, where the 
         BP was measured with 48 hours of the jog.  Measurements that meet this criteria will be grouped into a point on the graph,
         and a regression line calculated and displayed.
 
         <ul/>
-        If you judge the relationship to be significant, you can check that box.
+        The chart is a Regression calculation based on the the data points of the chosen Metric and Event over the given time period
+
         <ul/>
-        You can save the Analysis for later review.
+        If you judge the relationship to be significant, you can check that box and then save the Analysis for later review.
 
   about:
      "placeholder6":
