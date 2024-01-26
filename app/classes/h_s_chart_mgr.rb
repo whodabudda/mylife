@@ -16,6 +16,9 @@ class HSChartMgr
       @allSeries = []
    end
 
+    def user_name
+      Duser.find(@current_user).username
+    end
     def all_series
 
       Rails.logger.info "in: #{self}.#{__method__} " 
