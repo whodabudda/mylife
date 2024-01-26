@@ -35,6 +35,7 @@
       </li>
     -->
       <%# this is new navbar menu syntax for bootstrap 5 %>
+      <%if duser_signed_in? %>
       <li class="nav-item dropdown">
          <a class="nav-link dropdown-toggle" href="#" role="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Manage Content
@@ -44,10 +45,10 @@
               <%# The next 2 links will create a modal window for a new metric and unit respectively. Changed it to be an index view %>
               <%#= link_to 'Metrics',  [:new ,"metric".underscore ],data: { remote: true }, :class => "dropdown-item"  %>
               <%#= link_to 'New Unit',  [:new ,"unit".underscore ], data: { remote: true }, :class => "dropdown-item" %>
-              <%= link_to 'Metrics',  :metrics, :class => "dropdown-item"  %>
+              <%= link_to 'Metrics',  :metrics, :class => "dropdown-item"   %>
             </li>
             <li>  
-              <%= link_to 'Units',  :units, :class => "dropdown-item"  %>
+              <%= link_to 'Units',  :units, :class => "dropdown-item"   %>
             </li>
          </ul>
       </li>
@@ -58,7 +59,7 @@
          </a>
          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             <li>  
-              <%= link_to 'Under Construction',  "#", :class => "dropdown-item"  %>
+              <%= link_to 'Under Construction',  "#", :class => "dropdown-item" if duser_signed_in?  %>
             </li>
           </ul>
       </li>
@@ -70,7 +71,7 @@
       <li>
         <%= link_to 'Log Off', destroy_duser_session_path , method: :delete,:class => 'nav-link' if duser_signed_in? %>
       </li>
-
+      <%end%>
     </ul>
     <%#
       I don't know why the class format for the session message puts the message to the right of the container, but it does (this is the desired behaviour)
