@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Metric:</strong>
+  <%= @review.metric_id %>
+</p>
+
+<p>
+  <strong>Event:</strong>
+  <%= @review.event_id %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @review.duser_id %>
+</p>
+
+<p>
+  <strong>Start dt:</strong>
+  <%= @review.start_dt %>
+</p>
+
+<p>
+  <strong>End dt:</strong>
+  <%= @review.end_dt %>
+</p>
+
+<p>
+  <strong>Span:</strong>
+  <%= @review.span %>
+</p>
+
+<p>
+  <strong>Significant:</strong>
+  <%= @review.significant %>
+</p>
+
+<%= link_to 'Edit', edit_review_path(@review) %> |
+<%= link_to 'Back', reviews_path %>

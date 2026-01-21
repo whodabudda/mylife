@@ -1,0 +1,95 @@
+<!--
+  This partial will populate the fields for 2 different form tags.  The actual form tag is created in the "form.html.erb"for the GET and POST, but the POST is only called from 'show_regression.js.erb' 
+  because we want only the submit button to show and then only if the form passes validations.
+  If "post_method" is true, then all fields are hidden except 'submit' which calls the create action.
+  Otherwise the 'show_regression' action is called.
+-->
+<%  review = local_assigns.fetch(:review, @review) %>
+<%  post_method = local_assigns.fetch(:post_method, false) %>
+
+  <% review.errors.clear %>
+  <% review.valid? %>
+  <%  Rails.logger.info "local_assigns in form_with_content: #{local_assigns}" %>
+  <% if review.errors.any? %>
+      <div id="review-model-error">
+      <h2><%= pluralize(review.errors.count, "error") %> prohibited this review from being saved:</h2>
+
+      <ul>
+        <% review.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+<%# Rails.logger.info "review data in form: post_method: #{post_method}  #{review.inspect}"%>
+  <div class="form-group">
+    <%= form.label :metric_id , class:"control-label" , hidden: post_method %>
+    <% @m = Metric.where( " (duser_id = 1 or duser_id = ?) and series_type = ?", current_duser.id, "metric" ) %>
+    <%= collection_select(:review,:metric_id,@m, :id, :name,{:selected => review.metric_id,prompt: true} ,onchange: "handleReviewChange()")%>
+  </div>
+
+  <div class="field" >
+    <%= form.label :event_id %>
+    <% @e = Metric.where( " (duser_id = 1 or duser_id = ?) and series_type = ?", current_duser.id, "event" ) %>
+    <%= collection_select(:review,:event_id,@e, :id, :name,{:selected => review.event_id, prompt: true,required: true},onchange: "handleReviewChange()") %>
+    <%#= select_tag 'Event', options_from_collection_for_select(@e, 'id', 'name',:selected => review.event_id ) %>
+    <%#= collection_select(:metric,:id,@e, :id, :name) %>
+  </div>
+  <div class="field">
+    <%= form.label :duser_id ,hidden: true%>
+    <%= form.text_field :duser_id, value: current_duser.id, readonly: true,hidden: true,required: true%>
+  </div>
+
+  <!--  Use date_field instead of date_select because with date_field you get a calendar
+        popup, and date_select incorrectly loads the selection fields when the page is refreshed
+        TODO: Not sure why I was hiding fields if post_method is true.  Remove these conditions later when cleaning up
+        the code.
+  -->
+  <div class="field" <%= post_method ? nil : nil%> >
+    <%= form.label :start_dt %>
+    <%= form.date_field :start_dt,required: true ,onchange: "handleReviewChange()" %>
+  </div>
+
+  <div class="field" <%= post_method ? nil : nil%> >
+    <%= form.label :end_dt%>
+    <%= form.date_field :end_dt,required: true, onchange: "handleReviewChange()"%>
+  </div>
+
+  <div class="field" <%= post_method ? nil : nil%>>
+    <%= form.label :span %>
+    <%#= form.number_field :span %>
+    <%# TODO  turn this into an input field with a range option %>
+    <%= select :review,:span, options_for_select([ "24", "48" ,"72","96","120","144","168"],review.span ),{}, onchange: "handleReviewChange()"%>
+  </div>
+
+  <div class="field" <%= post_method ? nil : nil%>>
+    <%= form.label :significant%>
+    <%= form.check_box :significant , readonly: true%>
+  </div>
+  <div class="field">
+    <%= form.label :id ,hidden: true%>
+    <%= form.number_field :id , readonly: true, hidden: true%>
+ </div>
+
+  <% if review.valid? %>
+    <div class="actions">
+      <%= form.submit 'Save Review' %>
+    </div>
+  <%end%>
+
+ <%=link_to 'my_link', reviews_show_regression_path(review.as_json), remote: true ,hidden: true, id: "show-chart" %>
+
+<script>
+function handleReviewChange() {
+  // Serialize form data
+  var formData = $('#review-form').serialize();
+
+  // Set href attribute for the hidden link
+  var newHref = '<%= reviews_show_regression_path %>' + '?' + formData;
+  $('#show-chart').attr('href', newHref);
+
+  // Trigger a click on the hidden link
+  document.getElementById('show-chart').click();
+}
+</script>

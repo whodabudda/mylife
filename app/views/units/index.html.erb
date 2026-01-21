@@ -1,0 +1,32 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Units</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Displ name</th>
+      <th colspan="2"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @units.each do |unit| %>
+      <tr>
+        <% auth = Duser.auth?(unit.duser_id, current_duser.id) %>
+        <td><%= unit.name %></td>
+        <td><%= unit.displ_name %></td>
+        <%if auth %>
+        <td><%#= link_to 'Show', unit %></td>
+        <td><%= link_to 'Edit', edit_unit_path(unit), remote: true%></td>
+        <td><%= link_to 'Destroy', unit, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <%end%>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Unit', new_unit_path , remote: true%>

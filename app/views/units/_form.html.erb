@@ -1,0 +1,40 @@
+
+<%#
+<div class="modal-dialog" >
+  <div class="modal-content" >
+%>
+<%= form_for @unit, remote: true, html: { style: "display:inline;" } do |f| %>
+  <% if @unit.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@unit.errors.count, "error") %> prohibited this unit from being saved:</h2>
+
+      <ul>
+      <% @unit.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br>
+    <%# add autocomplete off so that the browser built-in drop-down of previous entries doesn't show %>
+    <%= f.text_field :name , autocomplete: "off"%>
+  </div>
+  <div class="field">
+    <%= f.label :name_to_display %><br>
+    <%= f.text_field :displ_name %>
+  </div>
+  <div class="field" hidden="true">
+    <%= f.label :duser_id %><br>
+    <%= f.text_field :duser_id, readonly: true%>
+  </div>
+  <div class="modal-footer actions">
+    <%= f.submit class: "btn btn-primary" %>
+  </div>
+
+<% end %>
+<%#
+  </div>
+  </div>
+%>

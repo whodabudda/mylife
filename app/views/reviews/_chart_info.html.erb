@@ -1,0 +1,25 @@
+<%#= chartSeries = local_assigns.fetch(:chartSeries) %>
+
+<%# Rails.logger.info ("chart_info values:  #{chartSeries.show_result}") %>
+<%if defined?(reviewStats) and !reviewStats.nil? %>
+
+	<% chartSeries = reviewStats.active_class %>
+	<p>
+		<% chartSeries.messages.each_pair do  |key,value| %>
+		 <dt><%= key %> </dt>
+		 <% value.each do |line| %>
+			<dd><%= line %> </dd>
+		 <%end%>
+		<%end%>
+	</p>
+	<h5>
+<%else%>
+	<%if defined? chart_active and chart_active %>
+	<h2> 
+		Sorry.  Something went wrong and we can't interpret the data. If the problem persists, please contact  whodabudda@gmail.com. 
+	</h2>
+	<%end%>
+<%end%>
+
+<% if false %>
+<%end%>

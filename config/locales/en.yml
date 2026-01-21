@@ -1,0 +1,171 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# The following keys must be escaped otherwise they will not be retrieved by
+# the default I18n backend:
+#
+# true, false, on, off, yes, no
+#
+# Instead, surround them with single quotes.
+#
+# en:
+#   'true': 'foo'
+#
+# To learn more, please read the Rails Internationalization guide
+# available at https://guides.rubyonrails.org/i18n.html.
+
+en:
+  introduction:
+     "placeholder1":
+       heading: When you first log in
+       text: >
+        Before you create your account, you will see the splash screen.
+        Nothing is enabled other than the About and Doc menus. In the top right, you will see a message 
+        'Please Sign-Up or sign-in'. Click on that link to continue using the app.
+
+     "placeholder2":
+       heading: Signing up
+       text: >
+        On the log in page, if you already have an account, you can put in your email, a username, and password and log in.
+        You can recover from a lost/forgotten password, providing the email for your account is still valid. If you have 
+        lost/forgotten your password AND no longer have the email for the account, you will need to send an 
+        email to whodabudda@gmail.com for support.
+
+     "placeholder3":
+       heading: Metrics and Events
+       text: >
+        The site is designed to enable you to capture data about things that you measure (the Metrics), and things that 
+        you do (the Events).  For example, if you want to measure your blood pressure, that would be a Metric (actually one of
+         the pre-configured Metrics in the system).  Then if you want to see what effect some activities have on your blood pressure,
+        those are considered 'Events'.  Events could be anything from eating a salty meal, jogging for an hour, going to the Gym, or even 
+        sitting around doing nothing.  When you chart a Metric or Event, you need only assign a value, and if necessary adjust the date 
+        and time that it occured.  All values must be a positive integer.  Thus, all units must be able to be expressed as a positive integer.
+
+        <ul/>
+        It is helpful to view the number associated with an Event or Metric in terms of their Units. Blood pressure is always 
+        understood in terms of atmospheric pressure, or milligrams of mercury (mm).  Any event that doesn't have a 
+        standard unit should have one defined for it that makes sense to you.  For example, sleep.  You may want to define your
+        quality of sleep as a scale of 1 to 10 ("1 <> 10").  
+
+        <ul/>
+        You can define your own Metrics/Events, and Units.  They can't be the same names as the pre-configured ones.  Select
+        the 'Manage Content -> Metrics' menu.  The pre-configured Metrics are listed first.  You cannot change these. Whatever 
+        Metrics you define will be listed under these, and will have an Edit and Destroy link under the Actions heading.
+
+        <ul/>
+        To create a new Metric/Event, use the 'New Metric' link under the list of Metrics.
+
+        <ul/>
+        The same design appears for the 'Manage Content -> Units' menu.
+
+        <ul/>
+        One last comment on creating Metrics and Events.  They are both confusingly called Metrics, but are differentiated under
+         the 'Type' heading. There can be a grey area around Metrics and Events, where something you measure can also be 
+         something that affects that measurement. For example Pain.  It can be something you measure against the event of going to the Gym,
+         but can also be something that affects your blood pressure,
+     "placeholder4":
+       heading: Charting
+       text: >
+        To add data points, use the table at the top of the Home page.  
+        The table has columns for Metric, Value, Units, Datetime, and then 3 links for deleting, editing, and copying the row.
+
+        <ul/>
+        The easiest way to add a point is to use the '+' icon. That creates a new row identical to the row you were on. You can 
+        then change the Metric and Value to be the new point you want to add. Don't forget to change the date to the datetime the Metric
+        new point actually occured.
+
+        <ul/>
+        The pencil icon for editing will bring up a form window for editing the fields, but I think its easier to just edit
+        them in place.
+
+        <ul/>
+        Metric has a drop-down list to choose from.  Units are filled in automatically.  The Value is self-explainatory, but 
+        it should make sense in the context of the Metric.  As stated earlier, it must be a positive integer. 
+        Very large numbers can throw the chart off if the charting item is
+        defined as Metric (as opposed to Event).  Metrics are displayed as lines on the graph.  Events are displayed as icons.  Hover over the icon to
+        see the actual value, however for charting purposes, we display the Event as its Standard Deviation for all charted values
+        of that event.
+
+        <ul/>
+        If it looks like the chart is not in synch with the table, use the 'Refresh Chart' button.
+
+        <ul/>
+        If you want to see only one Metric/Event, use the Filter button.
+
+        <ul/>
+        The legend at the bottom of the chart allows you to filter what you see in just the chart. 
+
+        <ul/>
+        The Set Extremes button allows you to select a date range for the chart.  This can help visualize the data when
+        it becomes crowded with a lot of points.
+
+
+     "placeholder5":
+       heading: Analysis
+       text: >
+        So what do we do with this data?
+        Basically, we just look for correllations.  We want to see if there is a relationship between the Metrics and Events.
+        
+        <ul/>
+        To do that, go to the 'Analysis' menu.
+
+        <ul/>
+        If you saved any past regressions, it will come up on the screen. Otherwise, you will just see the input fields.
+
+        <ul/>
+        The Metric is the 'dependant' variable, and is the coordinate on the Y axis (vertical).  The Event is the X variable and listed
+        the coordinate on the X axis (horizontal).  
+
+        <ul/>
+        You provide the Metric, Event, a date range for when the Metric was measured and the Event occurred, and a time span 
+        that indicates the proximity you want for these two coordinates.  
+
+        <ul/>
+        For example, you want to see a regression for how your jogging affects blood pressure from June to December, where the 
+        BP was measured with 48 hours of the jog.  Measurements that meet this criteria will be grouped into a point on the graph,
+        and a regression line calculated and displayed.
+
+        <ul/>
+        The chart is a Regression calculation based on the the data points of the chosen Metric and Event over the given time period
+
+        <ul/>
+        If you judge the relationship to be significant, you can check that box and then save the Analysis for later review.
+
+  about:
+     "placeholder6":
+       heading: Disclaimers
+       text: >
+        MyLife BioCharting  v0.1 01/19/2024
+        <ul/>
+        The ideas and content of this website are entirely the property of the author.
+        <ul/>
+        No personal information whatsoever will be published or sold.
+        <ul/>
+        Charting data added by users of the app may be anonnomyzed and aggregated for research purposes.
+        <ul/>
+        Licensed under the MIT open source license.
+        <ul/>
+        There are no guarentees or warrenties.
+        <ul/>
+        Use at your own discretion and risk.
+
+
+
+
+
+

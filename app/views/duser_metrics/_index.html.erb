@@ -1,0 +1,15 @@
+    <% @duser_metrics.each do |duser_metric| %>
+      <tr>
+        <td><%= duser_metric.value %></td>
+        <td/>
+        <td><%= duser_metric.occur_dttm %></td>
+        <td/>
+        <td><%= duser_metric.metric.name %></td>
+        <td><%#= link_to 'Show', duser_metric %></td>
+        <td/>
+        <td><%= duser_metric.metric.unit.name %></td>
+        <td/>
+        <td><%= link_to 'Edit', edit_duser_metric_path(duser_metric), remote: true, class: "btn btn-default" %></td>
+        <td><%= link_to 'Destroy', duser_metric, method: :delete, remote: true, class: "btn btn-danger", data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>

@@ -1,0 +1,107 @@
+                                  Prefix Verb   URI Pattern                                                                                       Controller#Action
+                       user_session_home GET    /user_session/home(.:format)                                                                      user_session#home
+                            reviews_home GET    /reviews/home(.:format)                                                                           reviews#home
+                    reviews_select_modal GET    /reviews/select_modal(.:format)                                                                   reviews#select_modal
+                 reviews_show_regression GET    /reviews/show_regression(.:format)                                                                reviews#show_regression
+                 user_session_add_metric GET    /user_session/add_metric(.:format)                                                                user_session#add_metric
+                  user_session_add_event GET    /user_session/add_event(.:format)                                                                 user_session#add_event
+              user_session_define_metric GET    /user_session/define_metric(.:format)                                                             user_session#define_metric
+               user_session_define_event GET    /user_session/define_event(.:format)                                                              user_session#define_event
+                      user_session_chart GET    /user_session/chart(.:format)                                                                     user_session#chart
+                           reviews_chart GET    /reviews/chart(.:format)                                                                          reviews#chart
+                    user_session_refresh GET    /user_session/refresh(.:format)                                                                   user_session#refresh
+         duser_metrics_show_unit_display GET    /duser_metrics/show_unit_display(.:format)                                                        duser_metrics#show_unit_display
+         duser_metrics_filter_table_rows GET    /duser_metrics/filter_table_rows(.:format)                                                        duser_metrics#filter_table_rows
+                                         POST   /user_session/home(.:format)                                                                      user_session#changes
+                    duser_metrics_create POST   /duser_metrics/create(.:format)                                                                   duser_metrics#create
+                      duser_metrics_edit POST   /duser_metrics/edit(.:format)                                                                     duser_metrics#edit
+                     user_session_delete POST   /user_session/delete(.:format)                                                                    duser_metrics#destroy
+                           duser_metrics POST   /duser_metrics(.:format)                                                                          duser_metrics#create
+      user_session_toggle_metric_visible POST   /user_session/toggle_metric_visible(.:format)                                                     metrics#toggle_metric_visible
+   duser_metrics_save_duser_metric_table PATCH  /duser_metrics/save_duser_metric_table(.:format)                                                  duser_metrics#save_duser_metric_table
+                     duser_metrics_chart GET    /duser_metrics/chart(.:format)                                                                    duser_metrics#chart
+                   duser_metrics_destroy DELETE /duser_metrics/destroy(.:format)                                                                  duser_metrics#destroy
+                                         GET    /duser_metrics(.:format)                                                                          duser_metrics#index
+                                         POST   /duser_metrics(.:format)                                                                          duser_metrics#create
+                        new_duser_metric GET    /duser_metrics/new(.:format)                                                                      duser_metrics#new
+                       edit_duser_metric GET    /duser_metrics/:id/edit(.:format)                                                                 duser_metrics#edit
+                            duser_metric GET    /duser_metrics/:id(.:format)                                                                      duser_metrics#show
+                                         PATCH  /duser_metrics/:id(.:format)                                                                      duser_metrics#update
+                                         PUT    /duser_metrics/:id(.:format)                                                                      duser_metrics#update
+                                         DELETE /duser_metrics/:id(.:format)                                                                      duser_metrics#destroy
+                                   units GET    /units(.:format)                                                                                  units#index
+                                         POST   /units(.:format)                                                                                  units#create
+                                new_unit GET    /units/new(.:format)                                                                              units#new
+                               edit_unit GET    /units/:id/edit(.:format)                                                                         units#edit
+                                    unit GET    /units/:id(.:format)                                                                              units#show
+                                         PATCH  /units/:id(.:format)                                                                              units#update
+                                         PUT    /units/:id(.:format)                                                                              units#update
+                                         DELETE /units/:id(.:format)                                                                              units#destroy
+                                 metrics GET    /metrics(.:format)                                                                                metrics#index
+                                         POST   /metrics(.:format)                                                                                metrics#create
+                              new_metric GET    /metrics/new(.:format)                                                                            metrics#new
+                             edit_metric GET    /metrics/:id/edit(.:format)                                                                       metrics#edit
+                                  metric GET    /metrics/:id(.:format)                                                                            metrics#show
+                                         PATCH  /metrics/:id(.:format)                                                                            metrics#update
+                                         PUT    /metrics/:id(.:format)                                                                            metrics#update
+                                         DELETE /metrics/:id(.:format)                                                                            metrics#destroy
+                                 reviews GET    /reviews(.:format)                                                                                reviews#index
+                                         POST   /reviews(.:format)                                                                                reviews#create
+                              new_review GET    /reviews/new(.:format)                                                                            reviews#new
+                             edit_review GET    /reviews/:id/edit(.:format)                                                                       reviews#edit
+                                  review GET    /reviews/:id(.:format)                                                                            reviews#show
+                                         PATCH  /reviews/:id(.:format)                                                                            reviews#update
+                                         PUT    /reviews/:id(.:format)                                                                            reviews#update
+                                         DELETE /reviews/:id(.:format)                                                                            reviews#destroy
+                       new_duser_session GET    /dusers/sign_in(.:format)                                                                         devise/sessions#new
+                           duser_session POST   /dusers/sign_in(.:format)                                                                         devise/sessions#create
+                   destroy_duser_session DELETE /dusers/sign_out(.:format)                                                                        devise/sessions#destroy
+                      new_duser_password GET    /dusers/password/new(.:format)                                                                    devise/passwords#new
+                     edit_duser_password GET    /dusers/password/edit(.:format)                                                                   devise/passwords#edit
+                          duser_password PATCH  /dusers/password(.:format)                                                                        devise/passwords#update
+                                         PUT    /dusers/password(.:format)                                                                        devise/passwords#update
+                                         POST   /dusers/password(.:format)                                                                        devise/passwords#create
+               cancel_duser_registration GET    /dusers/cancel(.:format)                                                                          devise/registrations#cancel
+                  new_duser_registration GET    /dusers/sign_up(.:format)                                                                         devise/registrations#new
+                 edit_duser_registration GET    /dusers/edit(.:format)                                                                            devise/registrations#edit
+                      duser_registration PATCH  /dusers(.:format)                                                                                 devise/registrations#update
+                                         PUT    /dusers(.:format)                                                                                 devise/registrations#update
+                                         DELETE /dusers(.:format)                                                                                 devise/registrations#destroy
+                                         POST   /dusers(.:format)                                                                                 devise/registrations#create
+                        new_duser_unlock GET    /dusers/unlock/new(.:format)                                                                      devise/unlocks#new
+                            duser_unlock GET    /dusers/unlock(.:format)                                                                          devise/unlocks#show
+                                         POST   /dusers/unlock(.:format)                                                                          devise/unlocks#create
+                        welcome_greeting GET    /welcome/greeting(.:format)                                                                       welcome#greeting
+                           welcome_about GET    /welcome/about(.:format)                                                                          welcome#about
+                             welcome_doc GET    /welcome/doc(.:format)                                                                            welcome#doc
+                            welcome_home GET    /welcome/home(.:format)                                                                           welcome#home
+                              metric_add GET    /metric/add(.:format)                                                                             metric#add
+                             metric_edit GET    /metric/edit(.:format)                                                                            metric#edit
+                           metric_delete GET    /metric/delete(.:format)                                                                          metric#delete
+                                    root GET    /                                                                                                 welcome#greeting
+           rails_postmark_inbound_emails POST   /rails/action_mailbox/postmark/inbound_emails(.:format)                                           action_mailbox/ingresses/postmark/inbound_emails#create
+              rails_relay_inbound_emails POST   /rails/action_mailbox/relay/inbound_emails(.:format)                                              action_mailbox/ingresses/relay/inbound_emails#create
+           rails_sendgrid_inbound_emails POST   /rails/action_mailbox/sendgrid/inbound_emails(.:format)                                           action_mailbox/ingresses/sendgrid/inbound_emails#create
+     rails_mandrill_inbound_health_check GET    /rails/action_mailbox/mandrill/inbound_emails(.:format)                                           action_mailbox/ingresses/mandrill/inbound_emails#health_check
+           rails_mandrill_inbound_emails POST   /rails/action_mailbox/mandrill/inbound_emails(.:format)                                           action_mailbox/ingresses/mandrill/inbound_emails#create
+            rails_mailgun_inbound_emails POST   /rails/action_mailbox/mailgun/inbound_emails/mime(.:format)                                       action_mailbox/ingresses/mailgun/inbound_emails#create
+          rails_conductor_inbound_emails GET    /rails/conductor/action_mailbox/inbound_emails(.:format)                                          rails/conductor/action_mailbox/inbound_emails#index
+                                         POST   /rails/conductor/action_mailbox/inbound_emails(.:format)                                          rails/conductor/action_mailbox/inbound_emails#create
+       new_rails_conductor_inbound_email GET    /rails/conductor/action_mailbox/inbound_emails/new(.:format)                                      rails/conductor/action_mailbox/inbound_emails#new
+      edit_rails_conductor_inbound_email GET    /rails/conductor/action_mailbox/inbound_emails/:id/edit(.:format)                                 rails/conductor/action_mailbox/inbound_emails#edit
+           rails_conductor_inbound_email GET    /rails/conductor/action_mailbox/inbound_emails/:id(.:format)                                      rails/conductor/action_mailbox/inbound_emails#show
+                                         PATCH  /rails/conductor/action_mailbox/inbound_emails/:id(.:format)                                      rails/conductor/action_mailbox/inbound_emails#update
+                                         PUT    /rails/conductor/action_mailbox/inbound_emails/:id(.:format)                                      rails/conductor/action_mailbox/inbound_emails#update
+                                         DELETE /rails/conductor/action_mailbox/inbound_emails/:id(.:format)                                      rails/conductor/action_mailbox/inbound_emails#destroy
+new_rails_conductor_inbound_email_source GET    /rails/conductor/action_mailbox/inbound_emails/sources/new(.:format)                              rails/conductor/action_mailbox/inbound_emails/sources#new
+   rails_conductor_inbound_email_sources POST   /rails/conductor/action_mailbox/inbound_emails/sources(.:format)                                  rails/conductor/action_mailbox/inbound_emails/sources#create
+   rails_conductor_inbound_email_reroute POST   /rails/conductor/action_mailbox/:inbound_email_id/reroute(.:format)                               rails/conductor/action_mailbox/reroutes#create
+                      rails_service_blob GET    /rails/active_storage/blobs/redirect/:signed_id/*filename(.:format)                               active_storage/blobs/redirect#show
+                rails_service_blob_proxy GET    /rails/active_storage/blobs/proxy/:signed_id/*filename(.:format)                                  active_storage/blobs/proxy#show
+                                         GET    /rails/active_storage/blobs/:signed_id/*filename(.:format)                                        active_storage/blobs/redirect#show
+               rails_blob_representation GET    /rails/active_storage/representations/redirect/:signed_blob_id/:variation_key/*filename(.:format) active_storage/representations/redirect#show
+         rails_blob_representation_proxy GET    /rails/active_storage/representations/proxy/:signed_blob_id/:variation_key/*filename(.:format)    active_storage/representations/proxy#show
+                                         GET    /rails/active_storage/representations/:signed_blob_id/:variation_key/*filename(.:format)          active_storage/representations/redirect#show
+                      rails_disk_service GET    /rails/active_storage/disk/:encoded_key/*filename(.:format)                                       active_storage/disk#show
+               update_rails_disk_service PUT    /rails/active_storage/disk/:encoded_token(.:format)                                               active_storage/disk#update
+                    rails_direct_uploads POST   /rails/active_storage/direct_uploads(.:format)                                                    active_storage/direct_uploads#create

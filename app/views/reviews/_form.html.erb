@@ -1,0 +1,28 @@
+<div class="show-review-form" >
+<%  post_method = local_assigns.fetch(:post_method, false) %>
+<%  review = local_assigns.fetch(:review, @review) %>
+    <!--
+      Here we conditionally render the form.  There is apparently a bug in Rails where 
+      the 'form_with' helper cannot be in an if..end block because it can't determine if the end
+      tag as an end to its 'do' loop or the 'if' statement, Therefore, we have to include all 
+      the code inside the if..end block as opposed to just the 'form_with' fragment.
+    -->
+    <%# if post_method %>
+    <%Rails.logger.info "FORM: post_method: #{post_method.to_s} persisted?: #{review.persisted?} review: #{review.inspect}" %>
+      <%# byebug %>
+    <%= form_with(model: review  , html: {id: 'review-form' }) do |form| %>
+       <%= render partial: 'form_with_content',locals: {review: review, form: form,post_method: post_method} %>
+    <% end %>
+</div>
+    <% if false %>
+    <%# else %>
+    <!--
+      Bug apparently introduced at Rails 6.x where form_with doesn't create the data-remote attribute
+      consistently, and the way to force it is to say local: false.
+      https://stackoverflow.com/questions/45221800/rails-5-1-2-form-with-is-not-showing-data-remote-true-in-the-html
+    -->
+
+      <%=  form_with(model: review, method: :get, url:  url_for(controller: :reviews, action: :show_regression , id: review.id ), local: false) do |form|  %>
+      <%= render partial: 'form_with_content',locals: {review: review, form: form,post_method: post_method} %>
+      <% end %>
+    <% end%>

@@ -1,0 +1,71 @@
+
+class StatDistanceRegression < StatRegressionBase
+ include StatAssumptions
+    def initialize(review,ss) 
+        super(review,ss)
+    end
+
+    def perform_analysis
+        ndx = chartSeries.length
+        if chartSeries.index {|h| h[:name] == self.class.name }.nil? 
+            chartSeries[ndx] = {id: self.class.name}
+        else
+            ndx = chartSeries.index {|h| h[:name] == self.class.name }
+        end
+        Rails.logger.info "#{self.class.name}:#{__method__} --  Index is: #{ndx} "
+        chartSeries[ndx][:data] = getDataArray
+        setSingleValues(ndx)
+        chartSeries.push(getRegValues(ndx))  #create the series for the regression line
+    end
+
+    def checkAssumptions
+
+        validData? && (linear_regression? || unary_regression?)
+    end
+
+private
+ 
+#creates a data point for each event in the span window leading up to a metric. 
+#x value is the distance in hours of the event from the metric. y value is the metric value.
+#does not retain the events for the next metric, i.e. once a metric is hit, the next
+#reading resets the event list, so if the next reading is a metric, the event x value will be zero.
+#one effect of this is we can have a lot of values of zero for the x axis.
+def getDataArray
+  #debugger
+  values = []
+  Rails.logger.info "#{self.class.name}:#{__method__} -- dataset size #{dataset.size} "
+  events = []
+  dataset.each do |rec|
+    if (rec.metric_id == review.event_id) 
+      events.push rec
+    else
+      values.concat ( formatPoint(events,rec))    
+      events = []
+    end
+  end
+  #return the array of hashes for the highcharts :data array
+  #Rails.logger.info "#{self.class.name}:#{__method__} --  series data:  #{values} "
+  values
+end
+
+
+    #format the point data for highcharts to use. 
+    #For regressions, the y value is the metric, the x value the event.
+    #All metrics and events have numeric values
+    #return a hash useable by highcharts in its :data array
+def formatPoint(events,metric)
+  values = []
+  events.each do |rec|
+    hours = 0
+    hours = ((metric.occur_dttm - rec.occur_dttm)/3600).to_i if rec.metric_id == review.event_id
+    next if hours > @span_hours
+    point = {"id": metric.id, "x": hours, "y": metric.value, "myData": metric.occur_dttm}
+    values.push point
+  end
+  if values.length == 0
+    point = {"id": metric.id, "x": 0, "y": metric.value, "myData": metric.occur_dttm}
+    values.push point
+  end
+  return values
+end
+end

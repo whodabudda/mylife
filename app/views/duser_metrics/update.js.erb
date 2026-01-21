@@ -1,0 +1,24 @@
+<% require_dependency('h_s_series') %>
+  console.log("updating point")
+
+  <% @hss = HSSeries.new(Metric.find(@duser_metric.metric_id),@duser_metric.duser_id)
+     @pointStr = @hss.formatPoint(@duser_metric)
+  %>
+  <% Rails.logger.info ( "In update.js.erb with new point value of: #{@pointStr}" )%> 
+
+  //
+  //If the update is just for the occur_dttm or the value, can obtain the point by its duser_metric.id.
+  //However, if the Metric name has been changed (for example from Pulse to BP), then the point must be
+  //removed from its existing series, and added to the series it was changed into.  We put the name of 
+  //the series in both the highcharts series ID and NAME. Either one should return a unique series.
+  //
+
+  //this is the point for the old series
+  var thePoint = chart1.get(<%=@duser_metric.id%>);
+  console.log("found point: " + thePoint)
+  console.log("updating point: " + '<%= raw  @pointStr.to_json %>')
+  if (thePoint) {
+    thePoint.update(JSON.parse('<%=raw @pointStr.to_json%>'))
+  }
+
+

@@ -1,0 +1,56 @@
+<%#  require_dependency('h_s_series_base') %>
+<%#   require_dependency('h_s_series_regression') %>
+<style>
+  /* The sidebar menu */
+  .sidenav {
+    height: 80%; /* Full-height: remove this if you want "auto" height */
+   /*  width: 160px; Set the width of the sidebar */
+    position: relative; /* Fixed Sidebar (stay in place on scroll) */
+    z-index: 0; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    background-color: #f1f1f1; /* Black */
+    /* overflow-x: hidden;  Disable horizontal scroll */
+    padding-top: 20px;
+  }
+  /* When you mouse over the navigation links, change their color */
+  .sidenav a:hover {
+    color: blue;
+  }
+  .review-display {
+      width: 80%;
+  }
+  #review-model-error {
+  #}
+</style>
+<div class="container-fluid">
+  <div class="row">
+    <div id="review-home-erb" class="col-lg-2"> <!-- use col-lg-2 so that sidebar and chart stack when window is very small -->
+      <%= render :partial => "shared/review_sidebar" ,locals: {review: @review}%>
+    </div>
+    <div  class="col-8">
+      <%#= render partial: "chart" ,locals: {review: @review} if @review.valid?%>
+      <div id="review-error" class="review-display" > </div>
+      <div id="stat-links" >
+        <%= render partial: "stat_links" ,locals: {reviewStats: @reviewStats}%>
+      </div>
+      <div id="review-chart" class="review-display">
+        <%= render partial: "chart" ,locals: {review: @review}%>
+      </div>
+      <div id="review-info" class="review-display">
+        <%= render partial: "chart_info" ,locals: {reviewStats: @reviewStats}%>
+      </div>
+    </div>
+  </div>
+</div>
+<%#=image_tag("Rplot.jpg") %>
+<%#= image_pack_tag("static/Rplot.jpg") %>
+<%# if @review.metric_id&.nonzero?  and @review.event_id&.nonzero? %>
+<script>
+  var initialPage = "review_home"; // Assuming @page holds the page identifier
+</script>
+<%# end %>
+<%# 
+  obsolete code saved here in case it needs resurrection
+
+ %>

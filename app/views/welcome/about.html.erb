@@ -1,0 +1,23 @@
+<h1>About the MyLife Charting App</h1>
+  <div class="row">
+    <div class="yaml-display"-->
+    <section class="m-5" id="container">
+      
+    <article>
+     <%  
+         #
+         #The review status can also be translated using 
+         #rails I18n.t :key, scope: [:comma separated scope names]
+         #  ex:  I18n.t :name, scope: [:comment_review_status, :NOTR]
+         #or
+         #rails I18n.t 'dot.separated.scope.names'
+         # ex: show NOTR:  I18n.t 'comment_review_status.NOTR.name'
+         # 
+      data = YAML::load(File.open("config/locales/en.yml"))
+      data["en"]["about"].each do |k|
+     %>
+       <h4> <%= k[1]["heading"] %> </h4>
+       <p> <%= simple_format(k[1]["text"]).html_safe %> </p>
+   <%end%>
+   </article>
+   </section>

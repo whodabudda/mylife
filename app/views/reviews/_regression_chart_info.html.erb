@@ -1,0 +1,44 @@
+<%#= chartSeries = local_assigns.fetch(:chartSeries) %>
+
+<%if defined?(reviewStats) and !reviewStats.nil? %>
+
+	<% chartSeries = reviewStats.active_class %>
+	<% pearson_r = "an unknown" %>
+
+	<% 
+	case  chartSeries.pearson_r.to_f.abs 
+	when  0.0..0.3
+		pearson_r = "a weak"
+	when  0.3.. 0.5
+		pearson_r = "a moderate"
+	when  0.5..1.0
+		pearson_r = "a strong"
+	end
+	%>
+
+	<p>
+		<% chartSeries.messages.each_pair do  |key,value| %>
+		 <dt><%= key %> </dt>
+		 <% value.each do |line| %>
+			<dd><%= line %> </dd>
+		 <%end%>
+		<%end%>
+	</p>
+	<h5>
+		Based on the pearson r value, there appears to be <%= "#{pearson_r}"%> relationship between these two variables.
+	</h5>
+	<p>
+		Keep in mind that even if a correlation is statistically significant, it does not imply causation. It only indicates that there is a relationship between the variables. Establishing causation requires additional evidence and study design.
+	</p>
+	<br><br>
+	<h3> The regression line variables:  <%=chartSeries.show_result%> </h3>
+<%else%>
+	<%if defined? chart_active and chart_active %>
+	<h2> 
+		Sorry.  Something went wrong and we can't interpret the data. If the problem persists, please contact  whodabudda@gmail.com. 
+	</h2>
+	<%end%>
+<%end%>
+
+<% if false %>
+<%end%>

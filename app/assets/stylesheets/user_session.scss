@@ -1,0 +1,89 @@
+// Place all the styles related to the UserSession controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+//sass variable for offcanvas sidebar
+$offcanvas-horizontal-width: 200px;
+
+.ui-datepicker {
+    background: #333;
+    border: 1px solid #555;
+    color: #EEE;
+}
+table#metric_index td:not(:last-child) {
+  border-right: 10px solid transparent;
+  -webkit-background-clip: padding;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+}
+
+footer {
+  margin-top: 45px;
+  padding-top: 5px;
+  border-top: 1px solid #eaeaea;
+  color: #777;
+}
+
+footer a {
+  color: #555;
+}
+
+footer a:hover {
+  color: #222;
+}
+
+footer small {
+  float: left;
+}
+
+footer ul {
+  float: right;
+  list-style: none;
+}
+
+footer ul li {
+  float: left;
+  margin-left: 15px;
+}
+
+#createnewmetricbtn {
+  margin-top: 5px;
+}
+table.thetable {
+  height: 200px;
+  width: 100%;
+  outline: 2px solid blue;
+  border-collapse: collapse;
+  resize: both;
+
+  display: inline-block;
+  overflow-y: scroll;
+}
+
+table.thetable input:hover{
+  background-color: #ffffcc;
+}
+
+table.thetable tr{
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+table.thetable tr:nth-child(even) {
+  background-color:  #ccccff
+}
+table.thetable tfoot  {
+  border: 0;
+}
+table.thetable td:nth-child(1) { width: 20%; padding: 2px 10px 2px 2px; }
+table.thetable td:not(:first-child) {width: 30%;  padding: 3px 3px 3px 3px; }
+table.thetable input { font-size: 10px }
+
+.sticky{
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -o-sticky;
+  position: -ms-sticky;
+  position: sticky;
+  top: 10px;
+  z-index: 1;
+}

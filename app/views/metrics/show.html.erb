@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @metric.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @metric.description %>
+</p>
+
+<p>
+  <strong>Duser:</strong>
+  <%= @metric.duser.username%>
+  <% if Duser.system_user?(current_duser.id) %>
+	 <strong>Warning!! You are the System User:</strong>
+  <%end%>
+</p>
+
+<p>
+  <strong>Unit:</strong>
+  <%= @metric.unit.displ_name %>
+</p>
+<p>
+  <strong>Type:</strong>
+  <%= @metric.series_type %>
+</p>
+<p>
+  <strong>Color:</strong>
+  <span style="color: <%= @metric.series_color %> "> <%= @metric.series_color %> </span>
+</p>
+
+<%= link_to 'Edit', edit_metric_path(@metric) %> |
+<%= link_to 'Back', metrics_path %>

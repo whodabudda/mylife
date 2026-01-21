@@ -1,0 +1,18 @@
+<%# reviewStats = local_assigns[:reviewStats] %>
+<% if ! (defined?(reviewStats).nil?) %>
+	<% Rails.logger.info " chart_image.html.erb chartImageFile is: #{ reviewStats.active_class.chartImageFile} " %>
+	<div id="chart_image" style="height:600px;">
+	  <%= image_tag("tmp/#{reviewStats.active_class.chartImageFile}") %>
+	</div>
+<%#  review = local_assigns.fetch(:review, @review) %>
+<%else%>
+	<% Rails.logger.info " chart_image.html.erb : No reviewStats local assign found "%>
+ <%end%>
+<%#=link_to 'show-chart', '#', remote: true ,hidden: true, id: "show-chart" %>
+<%#=link_to 'my_link', reviews_show_regression_path(review.as_json), remote: true ,hidden: true, id: "show-chart" %>
+
+<%#=link_to 'my_link', reviews_chart_path( review.as_json), remote: true ,hidden: true, id: "show-chart" %>
+<%#  review = local_assigns.fetch(:review, @review) %>
+<%#=
+ #link_to 'my link', reviews_chart_path(review: @review), remote: true ,hidden: true, id: "show-chart"
+%>

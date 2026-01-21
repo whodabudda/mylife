@@ -1,0 +1,308 @@
+
+#writes out the javascript for Charts (Highcharts/highstock)
+
+class HSChartMgr
+    attr_accessor :renderto_div_tag,:chart_title_text,:yaxis_title_text,:xaxis_title_text
+    attr_accessor :current_user, :theChart, :the_date, :allSeries
+    # todo create a user profile that will control some things about what is loaded and displayed
+    
+    @hsseries  = nil #data:  HSSeries hash where series name = key, HSSeries object is the value
+    @startdate  = nil # date default to 30 days in the past, or whatever will provide the minimum of data points (default to 5).  So for example,  if we have less than 5 data points in the past 30 days, keep going back until we have 5 to display.
+    @enddate   = nil # default to the date of the last charted data point
+
+     def initialize(userid)
+      #
+      #Set all the highchart variables here.  They will be substituted into 
+      #the generated code.
+      #
+      @renderto_div_tag = 'highchart_mychart'
+      @chart_title_text = 'BioMetrics and Events'
+      @yaxis_title_text = 'Standard Deviation'
+      #current_user = request.env["warden"].user(:duser)
+      #Either pass in the user id, or get it from warden.  
+      #The Devise helper 'current_duser' is NOT available to this class.  
+      @current_user = userid
+      @theChart = ""
+      @allSeries = []
+     end
+     def render_to
+      @renderto_div_tag
+     end
+     def hs_head
+      rtn =<<EOJS
+      var chart1; // globally available
+      //
+      //function to format date as the number of weeks from the beginning of the year
+      //
+      Highcharts.dateFormats.W = function (timestamp) {
+        var date = new Date(timestamp)
+        var weeks = Math.floor(
+          (
+          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) 
+           - Date.UTC(date.getFullYear(), 0, 0)
+          ) 
+           / (24* 60 * 60 * 1000) //milliseconds in a day
+           / 7                    //seven days in a week
+        );  //end Math.floor
+        return weeks;
+      };
+
+      $(function() {
+      chart1 = new Highcharts.stockChart('#{@renderto_div_tag}', {
+        rangeSelector: {
+          selected: 1
+        },
+        plotOptions: {
+          series: {
+            dataGrouping: {
+                forced: true,
+                units: [
+                    ['week', [1]]
+                ]
+            }
+         }
+        },
+
+   //     zoomType: 'x',
+        title: {
+            text: '#{@chart_title_text}'
+        },
+        xAxis: {
+          type: 'datetime',
+      //    tickInterval: 7 * 24 * 36e5, // one week
+          tickInterval: 24 * 3600 * 1000, // one day
+          labels: {
+            format: '{value:Week %W/%Y}',
+            align: 'right',
+            rotation: -30
+          },
+          minRange: 36e5
+        },
+
+//         maxRange: 10000,
+          minRange: 36e5,
+//          dateTimeLabelFormats: {
+//            
+//          }
+        yAxis: {
+            minRange: 0,
+            maxRange: 10000,
+            title: {
+                text: '#{@yaxis_title_text}'
+            }
+       },
+EOJS
+     end
+
+    def hs_options
+      rtn =<<EOJS
+      legend: {
+        enabled: true
+      },
+
+      navigator: {
+        enabled: false,
+        series: {
+          data: 'BP Systolic'
+        },
+        xAxis: {
+          alignTicks: true,
+          startOnTick: true
+
+        }
+      },
+EOJS
+end
+    def hs_tooltip
+    rtn =<<EOJS
+    tooltip: {
+        crosshairs: true,
+      shared: false,
+      formatter: function() {
+        var line1 = Highcharts.dateFormat('%A, %b %e, %H:%M/%Y', new Date(this.point.x));
+        if (this.point.y > 0) {
+          line1 += ('<br>Value: ' + this.point.y );
+        } else {
+          line1 += (' <br>' + this.series.name);
+        }
+        
+        if(typeof this.point.myData !== "undefined") {
+          return  line1  + '<b>:' + this.point.myData + '</b>';
+        }else {
+          return line1;       
+        }
+      }
+    },
+EOJS
+end
+    def get_series_name(metric_id)
+      series_name = Metric.find(metric_id).name
+      return series_name
+    end
+
+    def get_group_option(name)
+         ret = ""
+         if name == "BP Systolic"
+           ret = " dataGrouping: {
+            approximation: function (groupData) {
+                return groupData[groupData.length - 1];
+            }}"
+         end
+         Rails.logger.info "get_group_option returning #{ret}" 
+         return ret
+    end
+
+    def all_series
+
+      Rails.logger.info "in: #{self}.#{__method__} " 
+      #
+      #Get all charted metrics defined by the system or this user
+      #
+      @metrics = Metric.select(:id,:name,:series_color,:series_type).where(id: DuserMetric.select("metric_id").where("duser_id = ? or duser_id = 1 ",@current_user ))
+      #
+      #For each defined metric, get the users's charted values for that metric 
+      #
+      @metrics.each do |mrec| 
+        #all the charted values for this mrec
+        @allSeries.push(HSSeries.new(mrec,@current_user))
+        #@the_series = DuserMetric.select(:occur_dttm, :value).for_duser(@current_user).for_series(mrec.id).order(occur_dttm: :asc)
+        #this_series = "  name: '#{mrec.name}', color: '#{mrec.series_color}', lineWidth: 0,marker: {enabled: true, radius: 7 }, states: {hover: {lineWidthPlus: 0 } },tooltip: {valueDecimals: 2 },visible: #{mrec.name == "Run" ? "false" : "true"}, #{get_group_option(mrec.name)} , data: ["
+      end
+      return @allSeries
+    end
+
+    def hs_series
+      Rails.logger.info "in: #{self}.#{__method__} " 
+      #
+      #Get the most recently charted metric and adjust the charting timespan to that, minus 1 month
+      #If there are no charted data, set the day to yesterday.
+      #
+      lcd = DuserMetric.select(:occur_dttm).where("duser_id = ?",@current_user).order(occur_dttm: :desc).first
+      Rails.logger.info "lcd from database is:#{lcd}" 
+      if lcd.nil? 
+          lcd = Date.yesterday
+        else
+          lcd = lcd.occur_dttm.to_date 
+          lcd = lcd -800
+      end
+      @the_date = lcd
+      Rails.logger.info "lcd after conversion:#{lcd}" 
+      @metrics = Metric.select(:id,:name,:series_color).where(id: DuserMetric.select("metric_id").where("duser_id = ? and occur_dttm > ?",@current_user, lcd ))
+      Rails.logger.info "Returned #{@metrics.each.count} records into @metrics" 
+      all_series = "series: [{"
+      this_series = ""
+      @metrics.each do |mrec| 
+        @the_series = DuserMetric.select(:occur_dttm, :value).for_duser(@current_user).for_series(mrec.id). where("occur_dttm > ?",lcd ).order(occur_dttm: :asc)
+        this_series = "  name: '#{mrec.name}', color: '#{mrec.series_color}', lineWidth: 0,marker: {enabled: true, radius: 7 }, states: {hover: {lineWidthPlus: 0 } },tooltip: {valueDecimals: 2 },visible: #{mrec.name == "Run" ? "false" : "true"}, #{get_group_option(mrec.name)} , data: ["
+        #
+        #Create a Highchart datapoint for each point in the named series, consisting of a date and a value.
+        #The month has to be adjusted down because Hichart starts months at zero, and ruby starts at 1.
+        #
+        @the_series.each do |rec| 
+          this_series += "," if rec != @the_series.first
+          #subtract one from the month because mysql starts at 1 and highcharts starts at zero.
+          this_series += "[Date.UTC(#{rec.occur_dttm.year},#{(rec.occur_dttm.month) -1 } ,#{rec.occur_dttm.day},#{rec.occur_dttm.hour},#{rec.occur_dttm.min}),#{rec.value}]"
+        end
+
+        #handle the delimiters between series
+        if mrec != @metrics.last
+          this_series += "]" 
+#         if mrec.name == "BP Systolic"
+#           this_series += ", dataGrouping: {
+#            approximation: function (groupData) {
+#                return groupData[groupData.length - 1];
+#            }"
+#         end
+          this_series += "},{" 
+        else
+          this_series += "], " 
+        end
+        #Rails.logger.info "finished with series: #{this_series} " 
+        all_series += this_series 
+      end #start the next series
+
+      #wrap up with closing delimiters
+      all_series += "}]" 
+      #Rails.logger.info "Generated the series: #{all_series} " 
+      #send back the javascript
+      return all_series
+end
+=begin
+      rtn =<<EOJS
+      series: [{
+      name: 'BP Systolic',
+      color: 'red',
+      data: [
+      [Date.UTC(2015, 0, 1, 10, 30),120]
+      ,[Date.UTC(2015, 0, 1, 10, 30),150]
+      ,[Date.UTC(2015, 0, 2, 10, 30),140]
+      ,[Date.UTC(2015, 0, 3, 10, 30),130]
+      ]
+        },{
+            name: 'BP Diastolic',
+      color: 'blue',
+            data: [
+      [Date.UTC(2015, 0, 1, 09, 00),80]
+      ,[Date.UTC(2015, 0, 1, 10, 30),90]
+      ,[Date.UTC(2015, 0, 2, 10, 30),70]
+      ,[Date.UTC(2015, 0, 3, 10, 30),60]
+      ]
+    },{
+      name: 'Gym Events',
+      lineWidth: 0,
+      color: 'grey',
+      pointStart: Date.UTC(2015, 0, 1, 00, 00),
+      data: [
+      {  
+       x: Date.UTC(2015, 0, 1, 10, 30) 
+       ,y: 0
+       ,myData: 'worked out medium'
+      }
+      ,{ 
+       x: Date.UTC(2015, 0, 2, 10, 30)
+       , y: 0
+       ,myData: 'worked out hard with aerobics'
+       }
+       ,{ 
+       x: Date.UTC(2015, 0, 3, 10, 30)
+       , y: 0
+       ,myData: 'worked out light'
+       }
+      ]
+    },{
+      name: 'Golf Events',
+      color: 'green',
+      lineWidth: 0,
+      data: [
+      [Date.UTC(2015, 0, 1, 10, 00),0]
+      ,[Date.UTC(2015, 0, 2, 15, 30),0]
+      ,[Date.UTC(2015, 0, 4, 15, 30),0]
+      ,[Date.UTC(2015, 0, 5, 15, 30),0]
+      ]
+    }
+    ]
+EOJS
+  return rtn
+=end
+  def write 
+    #Rails.logger.info "in: HSChartMgr for user: " 
+    Rails.logger.info "in: #{self}.#{__method__} " 
+    #@theChart = hs_head + hs_options + hs_tooltip + hs_series + hs_end
+    @theChart = hs_head + hs_options + hs_series + hs_end
+  end
+  def hs_end 
+    rtn =<<EOJS
+      });
+    }); 
+EOJS
+end
+      # load up all the data for this user.  group by metric name, order by datetime of occurrence
+def load 
+end
+def self.refresh 
+    #config.logger = Logger.new(STDOUT)
+    #ActiveRecord::Base.logger.level = 0 
+    #ActiveRecord::Base.logger.debug "the current_duser is: " + current_duser
+end
+  
+end

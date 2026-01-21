@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @unit.name %>
+</p>
+
+<p>
+  <strong>Displ name:</strong>
+  <%= @unit.displ_name %>
+</p>
+
+<p>
+  <strong>Duser:</strong>
+  <%= @unit.duser %>
+</p>
+
+<%= link_to 'Edit', edit_unit_path(@unit) , remote: true%> |
+<%= link_to 'Back', units_path %>

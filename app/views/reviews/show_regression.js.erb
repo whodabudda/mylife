@@ -1,0 +1,237 @@
+
+<% #  require_dependency('h_s_series_base') %>
+<% #  require_dependency('h_s_series_regression') %>
+<% if false %>
+<% require_dependency('review_stats') %>
+<%=  Rails.logger.info "We made it into the show_regression.js.erb file" %>
+<%=  Rails.logger.info "Chart name is: #{ @chart_mgr.chart_title_text} " %>
+<% @review = (@tempreview.nil? ?  @review : @tempreview )%>
+<%  end %>
+
+<%# @chartSeries = (@chartSeries.nil? ?  nil : @chartSeries )%>
+<%#=  Rails.logger.info "ShowRegression.js_erb Review is:  #{ @review.inspect} " %>
+<%#=  Rails.logger.info "ShowRegression.js_erb chartSeries is:  #{ @chartSeries.inspect} " %>
+//
+// a tempreview variable will not have an id, thereby has not been persisted. This will be the case when
+// the review/home page is loaded and new data are typed into the sidebar fields.
+// A review variable can have an id.  It could have come from selecting a previous review from the database,
+// or from saving a new review and continuing to work/refine the parameters in the sidebar.
+//
+
+
+<% if @review.valid? && @reviewStats&.active_class&.valid? %>
+
+<%=  Rails.logger.info "regression.js.erb active_class is #{@reviewStats.active_class.class.name}" %>
+<%# TODO  if the reviewStats class has a temp filename, skip the highcharts stuff and display the 
+    tempfile instead.  The tempfile should be a jpeg %>
+
+<%# @chartSeries = HSSeriesRegression.new(@review) %>
+  /*
+Formats a JavaScript date timestamp (milliseconds since Jan 1st 1970) into a human readable date string. The available format keys are listed below. Additional formats can be given in the Highcharts.dateFormats hook.
+    %a: Short weekday, like 'Mon'
+    %A: Long weekday, like 'Monday'
+    %d: Two digit day of the month, 01 to 31
+    %e: Day of the month, 1 through 31
+    %w: Day of the week, 0 through 6
+    %b: Short month, like 'Jan'
+    %B: Long month, like 'January'
+    %m: Two digit month number, 01 through 12
+    %y: Two digits year, like 09 for 2009
+    %Y: Four digits year, like 2009
+    %H: Two digits hours in 24h format, 00 through 23
+    %k: Hours in 24h format, 0 through 23
+    %I: Two digits hours in 12h format, 00 through 11
+    %l: Hours in 12h format, 1 through 12
+    %M: Two digits minutes, 00 through 59
+    %p: Upper case AM or PM
+    %P: Lower case AM or PM
+    %S: Two digits seconds, 00 through 59
+    %L: Milliseconds (naming from Ruby)
+*/
+      var chart1; // globally available
+      var prev_days; // globally available
+      //
+      //function to format date as the number of weeks from the beginning of the year
+      //
+      Highcharts.dateFormats.W = function (timestamp) {
+        var date = new Date(timestamp)
+        var weeks = Math.floor(
+          (
+          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) 
+           - Date.UTC(date.getFullYear(), 0, 0)
+          ) 
+           / (24* 60 * 60 * 1000) //milliseconds in a day
+           / 7                    //seven days in a week
+        );  //end Math.floor
+        return weeks;
+      };
+
+      Highcharts.dateFormats.Days = function (timestamp) {
+        var date = new Date(timestamp)
+ 
+        var days = Math.floor(
+          (
+          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) 
+           - Date.UTC(date.getFullYear(), 0, 0)
+          ) 
+           / (24* 60 * 60 * 1000) //milliseconds in a day
+                               //seven days in a week
+        );  //end Math.floor
+        return days;
+      };
+
+      Highcharts.dateFormats.x = function (timestamp) {
+        var date = new Date(timestamp)
+ 
+        return (date.getMonth()+1) + "-" + date.getDate() + "-" + date.getFullYear();
+      };
+
+$(function () {
+      chart1 = Highcharts.chart('highchart_chart1', {
+
+        plotOptions: {
+	        scatter: {
+	        // shared options for all scatter series
+		        marker: {
+	            symbol: "triangle",
+	            enabled: true, 
+	            radius: 6, 
+        	    }, 
+        	},
+        },
+         title: {
+           // text: 'Regression Chart'  //todo: get this from a variable
+          text: '<%=@reviewStats.active_class.class.name %>'
+         },
+
+        chart: {
+        // zoomType: 'xy',  //zoom both axis
+         panning: false,   //allow user to scroll horizontally using the shift key
+         panKey: 'shift',
+         alignTicks: false,
+         marginLeft: 40,  // Keep all charts left aligned
+         spacingTop: 20,
+         spacingBottom: 20,
+         renderTo: "highchart_chart1",
+         type: 'scatter',
+        },
+
+        tooltip: {
+          crosshairs: true,
+          shared: false,
+          formatter: function() {
+//            var line1 = Highcharts.dateFormat('%a, %b %e %Y %H:%M', new Date(this.point.x));
+            var line1 = (' <br>' + this.series.name);
+            
+            if(typeof this.point.myData !== "undefined") {
+              line1 += '<b>:' + this.point.myData + '</b>';
+              line1 += ('<br>Value: x: ' + this.point.x + '/ y: ' + this.point.y );
+            }
+            return line1;       
+          } //formatter function
+        },  //tooltip
+          
+        xAxis: {
+          id: "event",
+          title: {
+             // text: <%#=@chartSeries.event.name%>
+              text: '<%= @review.event.name %>'
+          },
+          labels: {
+            rotation: -30, //put a 30 degree slant on the xaxis labels
+            allowOverlap: false
+	        }, //end xaxis.labels
+          zoomEnabled: false,
+          crosshair: true
+        }, //xaxis
+
+        yAxis: 
+        {
+          id: "metric",
+          title: {
+            text: '<%= @review.metric.name %>'
+          },
+          labels:
+          {
+            rotation: -30, //put a 30 degree slant on the xaxis labels
+            allowOverlap: false
+          }, //end xaxis.labels
+          enabled: true,
+          opposite: true,
+          minRange: 0,
+          maxRange: 300,
+          zoomEnabled: false
+        },
+        //define series in the chart options first as an empty array, then add each series 
+        //as an array element from the JSON datasets
+        series: []
+    });   //highchart mychart
+
+    //console.log("Array Length: " )
+    //
+    //chart_mgr.all_series returns an array of HSSeries objects
+    //loop through this array.
+    //  HSSeries.write will return a hash of the values for the series
+    //  parse hash into JSON and add it to Highcharts as a series
+    //
+
+     <%if @reviewStats.active_class.chartImageFile.nil? %>
+       <%@reviewStats.active_class.chartSeries.each do |stat_series_raw| %>
+        var stat_series = JSON.parse('<%= raw stat_series_raw.to_json %>')
+        console.log(stat_series)
+        chart1.addSeries(stat_series)
+        <%= num_of_values = stat_series_raw[:data]&.length || 0 %>
+        <%#= Rails.logger.info "show_regression.js.erb  #{@reviewStats.active_class.class.name} has #{stat_series_raw[:data].length} values  " %>
+        <%= Rails.logger.info "show_regression.js.erb  #{@reviewStats.active_class.class.name} has #{num_of_values} values " %>
+       <%end%>
+        chart1.reflow()
+        console.log("Chart has been created")
+     <%else%>
+        document.getElementById("highchart_chart1").innerHTML =  ("<%= j ("#{render partial: "chart", locals: {  reviewStats: @reviewStats, chart_active: true }}").html_safe %>")
+     <%end%>
+        //
+        //
+        //document.getElementById("review-info").replaceWith("<%= j ("#{render partial: 'chart_info', locals: {  chartSeries: @chartSeries}}").html_safe %>");
+
+        //document.getElementById("review-chart").innerHTML =  ("<%= j ("#{render partial: "chart"}").html_safe %>")
+        document.getElementById("review-info").innerHTML =  ("<%= j ("#{render partial: @reviewStats.active_class.chart_info_erb, locals: {  reviewStats: @reviewStats, chart_active: true }}").html_safe %>")
+        document.getElementById("review-error").innerText = '';
+        document.getElementById("review-home-erb").innerHTML = ("<%= j render(partial: 'shared/review_sidebar', locals: { review: @review }) %>");
+
+        <% if @reviewStats.stat_classes.length > 0 %>
+         document.getElementById("stat-links").innerHTML =  ("<%= j ("#{render partial: "stat_links", locals: {  reviewStats: @reviewStats }}").html_safe %>")
+        <%else%>
+         document.getElementById("stat-links").innerHTML =  '';
+        <% end %>
+        //make sure the chart display is turned on.
+        //document.getElementById("review-model-error").style.display  = "none";
+        document.getElementById('highchart_chart1').style.display = "block";
+});  //function
+<%else%>
+      <%=  Rails.logger.info "regression.js.erb - Either no reviewStats or active_class objects, clearing chart info.  " %>
+         //wipe out previous chart display and associated info.
+         //keep only an error message saying why no analysis could be displayed.
+         document.getElementById('highchart_chart1').style.display = "none";
+         document.getElementById("review-info").innerHTML = '';
+         document.getElementById("stat-links").innerHTML =  '';
+        // document.getElementById("review-model-error").style.display  = "block";
+        document.getElementById("review-home-erb").innerHTML = ("<%= j render(partial: 'shared/review_sidebar', locals: { review: @review }) %>");
+         document.getElementById("review-error").innerText = '<%= @reviewStats&.active_class&.error_msg %>'
+        //$("#review-home-erb").html("<%= j render(partial: 'form', locals: { review: @review }) %>");
+         console.log("changed review-error")
+<%end%>
+<% if false %>
+         //document.getElementById("review-chart").innerHTML = '';
+        var seriesLength = chart1.series.length;
+        for(var i = seriesLength - 1; i > -1; i--)
+        {
+         //chart.series[i].remove();
+           chart1.series[i].remove(false);
+        }
+        chart1.redraw()
+        chart1.reflow()
+        var reg_series_line = JSON.parse('<%= raw @reviewStats.active_class.getRegValues.to_json %>')
+        console.log(reg_series_line)
+        chart1.addSeries(reg_series_line)
+//$("#stat-links").replaceWith("<%= escape_javascript("#{render :partial => 'stat_links', :locals => {  reviewStats: @reviewStats}}").html_safe %>");
+<%end%>

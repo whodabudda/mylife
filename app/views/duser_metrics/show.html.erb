@@ -1,0 +1,27 @@
+
+<p <%= request.original_url %></p>
+<!--
+<p id="notice"><%= notice %></p>
+-->
+<p>
+  <strong>Value:</strong>
+  <%= @duser_metric.value %>
+</p>
+
+<p>
+  <strong>Occur dttm:</strong>
+  <%= @duser_metric.occur_dttm %>
+</p>
+
+<p>
+  <strong>Duser:</strong>
+  <%= @duser_metric.duser %>
+</p>
+
+<p>
+  <strong>Metric:</strong>
+  <%= @duser_metric.metric %>
+</p>
+
+<%= link_to 'Edit', edit_duser_metric_path(@duser_metric) %> |
+<%= link_to 'Back', duser_metrics_path %>

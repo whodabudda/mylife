@@ -1,0 +1,25 @@
+<% if @duser_metric.errors.any? %>
+
+  <% Rails.logger.info ( "In update.js.erb Error Condition" )%> 
+  // Create a list of errors
+  var errors = $('<ul />');
+
+  <% @duser_metric.errors.full_messages.each do |error| %>
+    errors.append('<li><%= escape_javascript(error) %></li>');
+  <% end %>
+
+  alert(errors)
+<% else %>
+//  var new_row = $('<%=  j('#{render(:partial => "shared/duser_metric_tr", locals: {duser_metric: @duser_metric})}').html_safe %>');
+  $("#tr_clone_<%=@duser_metric.id%>").replaceWith("<%= escape_javascript("#{render :partial => 'shared/duser_metric_tr', :locals => { :duser_metric => @duser_metric }}").html_safe %>");
+  var $new_row = $("#tr_clone_<%=@duser_metric.id%> td .default_datetimepicker");
+  $new_row.datetimepicker({
+          format: 'Y-m-d H:i:s O',
+          lazyInit:true,
+          step: 1,
+          validateOnBlur:false
+   });
+
+  $("#duser-metric-modal").modal("hide");
+ <% redirect_to "duser_session#home" %>
+<% end %>

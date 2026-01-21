@@ -1,0 +1,21 @@
+
+<div id="highchart_mychart" style="width:100%; height:500px;"></div>
+
+<div> 
+    <button id="button" class="autocompare">Set extremes</button> 
+    <%=  date_field("chart", "fromdate") %>
+    <%=  date_field("chart", "todate") %>
+</div>
+<%=
+ link_to 'my chart link', user_session_chart_path, remote: true ,data: {turbo: false}, hidden: true, id: "show-chart"
+ #link_to 'toggle visibility of charted metric', toggle_metric_visible_path, remote: true ,hidden: true, id: "toggle-metric-visible"
+%>
+  <%#= raw @highchart_js %>
+<script type="text/javascript">
+//  var showChart = function() {
+
+//      document.getElementById("show-chart").click();
+// }
+//  JQuery(document).on('turbolinks:load', showChart); // Turbolinks 5
+
+</script>

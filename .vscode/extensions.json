@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "aliariff.vscode-erb-beautify",   // ERB formatter + syntax highlighting
+    "aliariff.vscode-erb",            // ERB language support
+    "esbenp.prettier-vscode"          // Prettier for JS/HTML/TS
+  ]
+}

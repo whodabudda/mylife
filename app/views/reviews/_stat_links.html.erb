@@ -1,0 +1,29 @@
+<style type="text/css">
+  .checkmark  {
+    font-style: italic;
+    font-size: smaller;
+    color: green;
+  }
+  .checkmark:after {
+      content: '\2713';
+      color: green;
+      padding: 5px;
+  }
+</style>
+<% reviewStats = local_assigns.fetch(:reviewStats) %>
+<% Rails.logger.info ("***********in stat_links partial reviewStats?:  #{!reviewStats.nil?}") %>
+<%if defined?(reviewStats) and !reviewStats.nil? %>
+  <%# Rails.logger.info ("*********in stat_links partial chartSeries:  #{chartSeries.inspect}") %>
+  <% @review = reviewStats.review.dup %>
+  <ul class="stat-links list-group list-group-horizontal" >
+    <% reviewStats.stat_classes.each do |m| %>
+      <li>
+        <%=link_to m, reviews_show_regression_path(review: @review.as_json, testname: m),remote: true,  class: "list-group-item border-0 checkmark toggle_metric" %>
+      </li>
+      <li>
+      <% end %>
+    </ul>
+  <% end %>
+  <% if false %>
+    <%#= link_to m,  { @review , testname: m, remote: true, controller:"reviews" , action: "show_regression" } , {class: "list-group-item border-0 checkmark show_stat_chart"  } %>
+  <%end%>

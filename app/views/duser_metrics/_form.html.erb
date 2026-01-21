@@ -1,0 +1,45 @@
+<div class="modal-dialog" >
+  <div class="modal-content" >
+<%= form_for @duser_metric, remote: true, html: { style: "display:inline;" } do |f| %>
+  <% if @duser_metric.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@duser_metric.errors.count, "error") %> prohibited this duser_metric from being saved:</h2>
+
+      <ul>
+      <% @duser_metric.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :duser_id, value: "Metric Owner: #{@duser_metric.duser.username}", class:"control-label" %><br>
+    <%#= f.text_field @duser_metric.duser.username, readonly: true, class:"form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :metric_id , class:"control-label" %><br>
+    <% @m = Metric.where( " duser_id = 1 or duser_id = ?", current_duser.id ) %>
+    <%= f.select :metric_id, options_for_select(@m.map{ |c| [c.name, c.id, {'data-unit-name'=>Unit.find(c.unit_id).name}] }, selected_key = f.object.metric_id) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :value , class:"control-label" %><br>
+    <%= f.number_field :value , class:"form-control" %>
+    <%= f.label :value, value: @duser_metric.unit_name, class:"control-label", id: "modal_units_label" %><br>
+  </div>
+  <div class="form-group">
+    <%= f.label :occur_dttm , class:"control-label" %><br>
+    <%= f.datetime_select :occur_dttm , class:"form-control" %>
+  </div>
+  <div class="modal-footer">
+    <%= f.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", "#", class: "btn", data: {dismiss: "modal"} %>
+  </div>
+<% end %>
+  </div>
+</div>
+<script>
+$("#duser_metric_metric_id").change(function() {
+    $('#modal_units_label').text($('#duser_metric_metric_id option:selected').attr('data-unit-name'));
+}).change();
+</script>

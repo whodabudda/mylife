@@ -1,0 +1,196 @@
+module StatFunctions
+	#include ActiveSupport::Rescuable
+	#rescue_from StandardError, with: :rserve_error
+
+	#mattr_accessor :messages
+
+	#@messages = {}
+	#if the number of unique values is less than 6, consider the data categorical
+ def fCategorical? (vect)
+	return vect.map { |row| row[1]}.uniq.length < 6	 
+ end
+ def fUnary? (vect)
+	return vect.map { |row| row[1]}.uniq.length == 1	 
+ end
+ #if the variable is binary or no more than 3 categories
+ def fLogistical? (vect)
+	return vect.map { |row| row[1]}.uniq.length.between? 2,3
+ end
+ def fLinear? (x,y)
+ 	#TODO run a cor.test() in R.  correlation coefficient near 1 or -1 is linear, near 0 is not.
+ end
+ #create messaging based on the p-value and test
+ def normal_dist_message(pv,test,vect)
+   	Rails.logger.info("#{self.class.name}:#{__method__} -- ")
+	rtn = true 	
+ 	if pv < 0.05
+    	add_return_message(test,"p-value is: #{pv}, indicates the #{vect} data is not normally distributed.")
+    	add_return_message(test,"unable to perform normal regression")
+    	add_return_message(test,"will move on to a nonparametric test ")
+	   	Rails.logger.info("#{self.class.name}:#{__method__} -- not normally distributed")
+    	rtn = false
+ 	elsif pv >= 0.05
+    	add_return_message(test,"p-value is: #{pv}, which means the  #{vect} data is normally distributed.")
+	   	Rails.logger.info("#{self.class.name}:#{__method__} -- normally distributed")
+    end
+   	Rails.logger.info("#{self.class.name}:#{__method__} --#{test} returned #{rtn} for pvalue: #{pv}")
+    rtn
+ end 
+ def wilcox_test 
+ 	#indexes are 0:metric_id, 1:value, 2:occur_dttm
+ 	#create an array of arrays of 2 elements. rslt[0] is the value, and rslt[1] is
+ 	#a factor, acknowledging simply that an event happened in the time span, or not.
+ 	#this way we can create a dataframe suitable for a Mann-whitney (wilcox) test
+ 	#that compares the distribution of 2 sets of data, one for the dataset with no
+ 	#events, and one where an event happened.  A p-value of <.05 says reject the null
+ 	#hypothesis that they are equal, and accept the alternative that there is a 
+ 	#difference between the samples. The wilcox test can work with small numbers of
+ 	#data that are not normally distributed.
+	@rslt = []
+	events = []
+	binding.pry
+
+	
+	@ds.each do |rec| 
+		if rec[0] == @review.metric_id    #if this  
+			#remove all the events in the stack if they are not in the result.span window
+			#datetime math returns the result in days.  Convert to hours by multiplying times 24
+			events.delete_if {|row| if (((rec[2].to_datetime - row[2].to_datetime).to_i * 24) > @review.span) ; true end }
+			if (events.length > 0 )
+			  @rslt.push [rec[1],1]  #yes, the event was in our time frame for this metric
+			else
+			  @rslt.push [rec[1],0]  #no, the event didn't happen within the time frame for this metric
+			end
+		else
+			events.push rec  #this is an event, so push it on the stack
+		end
+	end
+ 	Rails.logger.info("#{self.class.name}:#{__method__} -- data for wilcox.test is #{@rslt} ")
+ 	#
+ 	#now separate the 2 columns in rslt into 2 separate arrays, one to act as the value, the 
+ 	#other as the factor.  The wilcox test will compare two distributions.  Here those 
+ 	#distributions are composed of the rslt array, separated by the value of the factor.
+ 	d = []
+	(0..(@rslt[0].length-1)).each  { |i|
+       d[i] = @rslt.map{|row| row[i] } }
+
+	(0..(d.length-1)).each  { |i| 
+		w = "w" + i.to_s
+	  @conn.assign w,d[i]
+	}
+
+  wf = @conn.eval ("wf <- data.frame( value = w0, fctor = w1)").to_ruby
+  wp = @conn.eval("wilcox.test(wf$value ~ as.factor(wf$fctor))").to_ruby
+  pv = wp["p.value"]
+ 	if pv < 0.05
+    	add_return_message("wilcox.test","p-value is: #{pv}, There may be a correllation between the metric and the event.")
+  else
+    	add_return_message("wilcox.test","p-value is: #{pv},  It cannot be determined that the events affect the metric")
+  end
+  return pv
+ end
+ #if the data are not parametric, need to perform non-parametric test for distribution, in this case
+ #a Mann-Whitney test, implemented in R as a 'wilcox.test'
+ #This actually compares two distributions
+ def perform_nonparametric_test (theTest)
+ 	case theTest
+ 	when "wilcox.test"
+ 		wilcox_test
+ 	else
+   	  add_return_message(theTest,"#{theTest} - a nonparametric test, is not yet implemented")
+   	end
+ 	return true
+ end
+
+ #
+ #run  normal distribution tests.
+ #
+ def perform_normal_dist_test (vect,theTest)
+  Rails.logger.info("#{self.class.name}:#{__method__} -- #{theTest} ")
+
+	@conn.assign "v1",vect
+	r = @conn.eval("#{theTest}(v1)").to_ruby
+	pv = r["p.value"]
+  Rails.logger.info("#{self.class.name}:#{__method__} --#{theTest} returned pvalue: #{pv}")
+  return pv
+end
+
+
+ def remove_outliers (vect,typ)
+ 	@conn.assign "v",vect
+ 	@conn.void_eval <<MYTAG
+ 	#the result of quantile will have index 1 = lower and 2 = higher quantile
+ 	rm <- quantile(v,probs=c(.25,.75))
+ 	#get the values that are considered either low or high outliers for both 
+ 	#independent and dependent variables  (metric and event)
+ 	cuts <- subset(v,(v > rm[2] + (IQR(v)* 1.5)) | (v < rm[1] - (IQR(v) * 1.5)))
+ 	#remove these values from their datasets.  For most independent datasets (events), there
+ 	#won't be any outliers
+ 	#m1 <- setdiff(m1,m_cuts)	Don't try to use setdiffs for this.  It strips duplicates.
+ 	v <- v[ ! v %in% cuts]
+MYTAG
+	vect = @conn.eval("v").to_ruby
+ 	cuts = @conn.eval("cuts").to_ruby
+ 	add_return_message("outliers", "#{cuts} were removed for #{typ}") unless cuts.nil?
+ 	Rails.logger.info("#{self.class.name}:#{__method__} -- outliers: #{cuts} were removed for #{typ}") unless cuts.nil?
+ 	return vect
+ end
+
+
+ #@messages is a hash, and the value is an array.  If the key exists, push the message onto the array.
+ #if the key does not exest, assign the array to the key as a new entry.
+ def add_return_message (key, msg)
+ 	if @messages.has_key?(key.to_sym)
+ 		@messages[key.to_sym].push(msg)
+	else
+	 	@messages[key.to_sym] = [msg]
+ 	end
+ end
+
+ def rserve_error(e)
+ 	#puts "Error: #{e.message}"
+   # flash[:notice] = "Unable to connect to the Rserve server"
+   # add_return_message ("Rserve", "Something went wrong with the R server so we cannot show you any analysis.")
+   # add_return_message ("Rserve", " Please contact support if this problem persists")
+   # raise e
+   #redirect_back(fallback_location: root_path)
+ end
+		
+end
+=begin        
+        #
+        #TODO  use the sharpiro-wilks test (in R shapiro.test(array)  )   to test for normality.
+        #It returns 2 fields:   W and p-value.  W is a measure of how well the data fill a noremal 
+        #distribution between zero and 1, with 1 being perfect match.  p-value is the confidence level
+        #that it is a normal dist.  Compare it to .05.  If greater than .05, you be 95% confident 
+        #that the data follows a normal dist.
+        for example, with this data, it passes with p-value > .05
+
+        > tt <- c(1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 4, 4, 4)
+        > shapiro.test( tt)
+            Shapiro-Wilk normality test
+
+        data:  tt
+        W = 0.95461, p-value = 0.1945
+
+        However, with this data it does not:
+        Shapiro-Wilk normality test
+        data:  c(2, 4, 3, 1, 2, 2, 5, 4, 5, 4, 4, 5, 4, 8, 6, 6, 4, 7, 7, 4, 4, 9, 9, 5, 5, 3, 3, 4, 10, 5, 4, 4)
+        W = 0.91812, p-value = 0.01849
+
+        #
+        #as of now, we'll take a swag at it.
+
+ def isCategorical?(type)
+        recs = @dataset.select{ |rec| rec.series_type == type}.map{|rec| rec.value }
+        n_tot = recs.count.to_f
+        n_uniq = recs.uniq.count 
+        n_pct = ((n_tot - n_uniq)/n_tot) * 100
+
+        if(n_tot > 50)  
+            return n_pct > 90
+        else
+            return n_pct > 70
+        end
+ end
+=end

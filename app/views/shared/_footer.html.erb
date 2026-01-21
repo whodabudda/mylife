@@ -1,0 +1,16 @@
+<footer class="footer">
+  <small>
+    The MyLife Biometric Charting by: 
+    <%= if current_duser != nil
+      current_duser.username.to_str  
+      else 
+        "Not Logged In"
+        end
+    %>
+    <%#=session_message%>
+  </small>
+    <ul>
+      <li><%= link_to "Footer Link ",   '#' %></li>
+      <li><a href="#">Footer href</a></li>
+    </ul>
+</footer>

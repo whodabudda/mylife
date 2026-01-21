@@ -1,0 +1,26 @@
+
+   <div class="container">
+        <div class="row">
+          <div class="col-md-8">
+            <h1>Capture <span class="em-text">Life</span></h1>
+            <p>
+             <%= image_tag "chart_bg2.png", class: "jumbotron_in_session" %> 
+            </p>
+            <p>An easy way to capture & share your vital numbers</p>
+            <p>Find me in app/views/shared/_greeting_with_content.html.erb</p>
+         </div>
+           <div class="col-md-4 auth_message">
+            <%= render partial: action_name %>
+            <%= show_params %>
+            <p> <%= request.path %> </p>
+            <p> <%= request.env['ORIGINAL_FULLPATH'] %> </p>
+            <% if devise_controller? %>
+              <p> This is a devise controller </p>
+            <%else%>
+              <p> This is NOT a devise controller </p>
+            <%end%>
+          </div>
+
+      </div>
+
+    </div>

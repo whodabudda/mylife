@@ -1,0 +1,8 @@
+node_modules/
+public/packs/
+public/assets/
+app/assets/builds/
+vendor/
+
+*.js.erb
+*.erb

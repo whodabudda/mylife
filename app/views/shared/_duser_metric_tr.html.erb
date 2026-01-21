@@ -1,0 +1,51 @@
+
+<tr class="tr_clone" id="tr_clone_<%=duser_metric.id.to_s%>" >
+<%= fields_for "duser_metrics[]", duser_metric do |f| %>  
+   <td> 
+        <%#
+         This collection select displays the name of the charted metric, along with a dropdown
+         list of other metrics available to the user.  If a different metric is selected, 
+         a call is made to 'show unit display', which updates DuserMetric table with the new 
+         metric_id, and changes the Units display to the one assigned to the new metric. Finally,
+         the chart is updated to remove the value from the old series, and add it to the new.
+        %>
+        <%# get all the metrics that are either system provided or this user created %>
+        <% @m = Metric.where( " duser_id = 1 or duser_id = ?", current_duser.id ) %>
+        <%# Now create the select list and tie it to a ujs call to 'show_unit_display' %>
+        <%=f.collection_select(:metric_id, @m, :id, :name,{}, 
+          { :data => { remote: true,
+                       :url => url_for(:controller => "duser_metrics", 
+                       :action => "show_unit_display",
+                       :id => duser_metric.id.to_s)
+         }}) %>
+    </td>
+   <td>
+    <%#= f.number_field :value ,data: {remote: true, method: :patch,url: duser_metric_path(id: duser_metric.id, value: duser_metric.value)} %> 
+    <%= f.number_field :value ,data: {remote: true, method: :patch,url: duser_metric_path(duser_metric)} %> 
+   </td>
+
+   <%= render partial: "shared/metric_unit_display", locals: {duser_metric: duser_metric} %> 
+
+   <td> 
+      <%#= f.text_field :occur_dttm , class: "default_datetimepicker mydatetimeInput" ,data: {remote: true, method: :patch,url: duser_metric_path(duser_metric)}%> 
+
+      <%= f.datetime_field :occur_dttm,data: {remote: true, turbo: false, method: :patch,url: duser_metric_path(duser_metric)}%> 
+   </td>
+   <td>
+   <%= link_to duser_metric,:class => "btn btn-default btn-xs tr_clone_remove_btn",:method =>"delete", :remote => true do %>
+      <span class="fa fa-remove" aria-hidden="true" style="color:red; font-size: 10px; font-weight: lighter "></span>
+   <% end %>  
+   </td>
+   <td>
+   <%= link_to duser_metrics_edit_path(:id => duser_metric.id.to_s),:controller => "duser_metrics", :action => "edit",  :class => "btn btn-default btn-xs tr_clone_edit_btn" , :method => "post", data: { remote: true, modal: true } do %>
+      <span class="fa fa-pencil" aria-hidden="true" style="color:black; font-size: 10px; font-weight: lighter "></span>
+   <% end %>  
+   </td>
+   <td>
+   <%= link_to duser_metrics_create_path(:clone_id => duser_metric.id.to_s),:controller => "duser_metrics", :action => "create",:class => "btn btn-default btn-xs tr_clone_add_btn", :method => "post", :remote => true do %>
+      <span class="fa fa-plus" aria-hidden="true" style="color:blue; font-size: 10px; font-weight: lighter "></span>
+   <% end %>  
+   </td>
+<% end %>  
+</tr>
+

@@ -1,0 +1,49 @@
+<%   require_dependency('h_s_series') %>
+/*
+Replace the units text for the table row where the metric name was changed.
+We also want the chart to reflect the change to the metric, so we include the chart update in this UJS script.
+*/
+$("#show_unit_display_<%=@duser_metric.id%>").replaceWith("<%= escape_javascript("#{render :partial => 'shared/metric_unit_display', :locals => { :duser_metric => @duser_metric }}").html_safe %>");
+
+/*
+Highcharts is very odd and difficult to comprehend how they expect their objects to interoperate.
+I can create or obtain a Point object, but I can't use that object to set a point in a series.
+I can set all the data in a series, but can't edit any point in the series.
+Therefore, when a data point changes from one series to another, we need to instantiate 
+our own series class to get all the new data points for both the old and the new series,
+then find both series in the Highcharts chart (chart1), then replace the data option for both series
+from the chart. Don't be tempted to mess with Chart.series.addPoint.  It will give you a headache.
+*/
+ <% 
+ 	Rails.logger.info("dm_old_metric_id is: #{@dm_old_metric_id}")
+ 	 @hssNew = HSSeries.new(Metric.find(@duser_metric.metric_id),@duser_metric.duser_id)
+    @hssOld = HSSeries.new(Metric.find(@dm_old_metric_id),@duser_metric.duser_id)
+ 	if false
+    end
+ %>
+
+  console.log("start")
+  var newSeries = chart1.get("<%= Metric.find(@duser_metric.metric_id).name %>");
+  console.log("at setData 1")
+ 	newSeries.setData(JSON.parse('<%=  raw @hssNew.getDataArray.to_json  %>')) 
+    newSeries = chart1.get("<%= Metric.find(@dm_old_metric_id).name %>");
+  console.log("at setData 2")
+ 	newSeries.setData(JSON.parse('<%= raw @hssOld.getDataArray.to_json %>') )
+  console.log("done")
+
+
+ /*
+  var thePoint = new Highcharts.Point()
+  thePoint = chart1.get(<%#=@duser_metric.id%>);
+  console.log("found point: " + thePoint)
+  //remove it from the old series
+  thePoint.remove(true);
+  console.log("removed point: " + thePoint)
+
+  var newSeries = chart1.get("<%#=Metric.find(@duser_metric.metric_id).name %>");
+
+  //console.log("found series : " + newSeries)
+
+  chart1.series[newSeries.index].data.addPoint("{id: 405, x: 1574931600000, y: 130, myData: 130}",true,true);
+  console.log("added to series index : " + newSeries.index)
+*/

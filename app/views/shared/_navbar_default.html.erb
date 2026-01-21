@@ -1,0 +1,87 @@
+<nav class="navbar sticky-top navbar-expand-md navbar-light bg-light ">
+  <div class="container-fluid">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+ <a class="navbar-brand" href="#">
+  <%#
+    Look in the packs/manifest.json file for the path to the image, and use that with the image_pack_tag
+  %>
+  <%= image_tag("44px-Wiki_letter_w.svg.png", :class => "d-inline-block align-top", :title => "Whodabudda") %> 
+    Whodabudda
+  </a>
+ 
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <%#
+      #Have to turn off turbolinks for this as it loses the javascript when re-directed from
+      #welcome/home.  Turbolinks is likely to go away soon in favor of Turbo from Hotwire, which
+      #will be standard starting with Rails 7.
+      #
+      %>
+      <li class="nav-item <%= 'active' if current_page?(root_path) %>"><%= link_to 'Home', root_path,:class => 'nav-link',:"data-turbo" => false %></li>
+      <li class="nav-item <%= 'active' if current_page?(welcome_about_path) %>"><%= link_to 'About', welcome_about_path ,:class => 'nav-link'%></li>
+      <li class="nav-item <%= 'active' if current_page?(welcome_doc_path) %>"><%= link_to 'Doc', welcome_doc_path ,:class => 'nav-link'%></li>
+     <!--
+      <li class="nav-item btn-group">
+         <a class="dropdown-toggle nav-link" href="#" type="button" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          New Content
+         </a>
+         <div class="dropdown-menu" role="menu" aria-labelledby="navbarDropdownMenuLink1">
+              <%#= link_to 'New Metric',  [:new ,"metric".underscore ], :class => "dropdown-item"  %>
+              <%#= link_to 'New Unit',  [:new ,"unit".underscore ], data: { remote: true, modal: true }, :class => "dropdown-item" %>
+              <%#= link_to 'New Value', [:new ,"duser_metric".underscore ],data: { remote: true, modal: true } , :class => "dropdown-item" %> 
+         </div>
+      </li>
+    -->
+      <%# this is new navbar menu syntax for bootstrap 5 %>
+      <%if duser_signed_in? %>
+      <li class="nav-item dropdown">
+         <a class="nav-link dropdown-toggle" href="#" role="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Manage Content
+         </a>
+         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li>  
+              <%# The next 2 links will create a modal window for a new metric and unit respectively. Changed it to be an index view %>
+              <%#= link_to 'Metrics',  [:new ,"metric".underscore ],data: { remote: true }, :class => "dropdown-item"  %>
+              <%#= link_to 'New Unit',  [:new ,"unit".underscore ], data: { remote: true }, :class => "dropdown-item" %>
+              <%= link_to 'Metrics',  :metrics, :class => "dropdown-item"   %>
+            </li>
+            <li>  
+              <%= link_to 'Units',  :units, :class => "dropdown-item"   %>
+            </li>
+         </ul>
+      </li>
+
+      <li class="nav-item dropdown">
+         <a class="nav-link dropdown-toggle" href="#" role="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         Settings 
+         </a>
+         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li>  
+              <%= link_to 'Under Construction',  "#", :class => "dropdown-item" if duser_signed_in?  %>
+            </li>
+          </ul>
+      </li>
+
+      <li>
+        <%= link_to 'Analysis', reviews_home_path , :class => 'nav-link' if duser_signed_in? %>
+      </li>
+
+      <li>
+        <%= link_to 'Log Off', destroy_duser_session_path , method: :delete,:class => 'nav-link' if duser_signed_in? %>
+      </li>
+      <%end%>
+    </ul>
+    <%#
+      I don't know why the class format for the session message puts the message to the right of the container, but it does (this is the desired behaviour)
+      Got the hint from:  https://stackoverflow.com/questions/63948287/bootstrap-5-navbar-align-items-right
+    %>
+    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+         <li class="nav-item"> 
+             <%= session_message %>
+         </li>
+    </ul>
+  </div>
+</div>
+</nav>

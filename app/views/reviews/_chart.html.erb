@@ -1,0 +1,27 @@
+<%# reviewStats = local_assigns[:reviewStats] %>
+<%#
+	if the active_class contains the name of a file in chartImageFile, then some other program produced
+	the chart for that statistical test, and all we want to do is display it. Otherwise, highcharts will
+	create the chart and place it in the div.
+%>
+<style>
+	.chart_image {
+		max-width: 100%;
+		height: auto;
+		width: 800px;
+		object-fit: cover;
+	}
+</style>
+<% if ! (defined?(reviewStats).nil?) %>
+	<% Rails.logger.info " chart.html.erb chartImageFile is: #{ reviewStats.active_class.chartImageFile} " %>
+	<div id="highchart_chart1">
+	  <%= image_tag("tmp/#{reviewStats.active_class.chartImageFile}", class: "chart_image") %>
+	</div>
+<%else%>
+	<% Rails.logger.info " chart.html.erb : No reviewStats local assign found "%>
+	<div id="highchart_chart1" class="chart_image"> </div>
+<%end%>
+
+<%if false %>
+	<div id="highchart_chart1" style="height:600px;"> </div>
+<%end%>

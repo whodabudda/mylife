@@ -1,0 +1,31 @@
+<% require_dependency('h_s_series') %>
+<% if @duser_metric.errors.any? %>
+
+  // Create a list of errors
+  var errors = $('<ul />');
+
+  <% @duser_metric.errors.full_messages.each do |error| %>
+    errors.append('<li><%= escape_javascript(error) %></li>');
+  <% end %>
+
+  alert(errors)
+<% else %>
+//  var new_row = $('<%=  j('#{render(:partial => "shared/duser_metric_tr", locals: {duser_metric: @duser_metric})}').html_safe %>');
+  $("#tr_clone_<%=@clone_id%>").after("<%= escape_javascript("#{render :partial => 'shared/duser_metric_tr', :locals => { :duser_metric => @duser_metric }}").html_safe %>");
+  var $new_row = $("#tr_clone_<%=@duser_metric.id%> td .default_datetimepicker");
+  $new_row.datetimepicker({
+          format: 'Y-m-d H:i:s O',
+          lazyInit:true,
+          step: 1,
+          validateOnBlur:false
+  });
+  //
+  //Add the new point to the chart.  If the point fails to update, the user must refresh the page
+  // We use the HSSeries class as it handles formatting for the metric and event series types
+ <% @hss = HSSeries.new(Metric.find(@duser_metric.metric_id),@duser_metric.duser_id)
+     @pointStr = @hss.formatPoint(@duser_metric)
+ %>
+ // the Metric name is the name of the Series.  
+  chart1.get('<%=Metric.find(@duser_metric.metric_id).name %>').addPoint(JSON.parse('<%=raw @pointStr.to_json%>',true))
+
+<% end %>

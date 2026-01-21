@@ -1,0 +1,74 @@
+
+//
+//@m_id has the metric_id of the selection
+//
+//console.log("Entered FilterTableRows.js.erb ")
+//console.log("The metric id is: " + <%=@m_id.to_s%>) 
+//
+//select all the <tr> elements that are in the table, classed as 'tr_clone'
+var trrows = document.querySelectorAll("tr.tr_clone")
+//console.log("Selected table rows " + trrows.length )
+
+//this is the Metric Filter dropdown row that was clicked
+var thisFilter = document.getElementById("toggle_metric_<%=@m_id.to_s%>")
+var filterrows = document.querySelectorAll("a.toggle_metric")
+
+var selectionsOn = (<%=@m_id == 0%> )
+var selectionsOff = (<%=@m_id == -1%> )
+console.log("User wants to turn on selections: " + selectionsOn )
+console.log("User wants to turn off selections: " + selectionsOff )
+//console.log("The selected filter is: " + thisFilter.id )
+
+//
+//A "checkmark" class means the option shows in the table. 
+//It is also green in the filter dropdown, and has a checkmark next to it.
+//If it has no checkmark class, it is plain black text with no checkmark.
+//
+if (selectionsOn) {
+	console.log("Adding checkmark to all toggle_metric classes %>")
+	filterrows.forEach(function(row)	{
+		row.classList.add("checkmark")
+ 	});
+}
+else if (selectionsOff) {
+	console.log("Adding checkmark to all toggle_metric classes %>")
+	filterrows.forEach(function(row)	{
+		row.classList.remove("checkmark")
+ 	});
+}
+else {
+//		console.log("thisFilter checkmark before Toggle is: " + thisFilter.classList.contains("checkmark"))
+		thisFilter.classList.toggle("checkmark")	
+//		console.log("thisFilter checkmark after toggle is: " + thisFilter.classList.contains("checkmark"))
+}
+
+//
+//Now take care of the table rows.  
+//The Metric column is the first (and only) <td> element in the <tr> table with
+//a set of options for select.  The drop down option that is selected is the 'option:checked' element
+//whose value is the Metric.id for that option.
+//If the user wants to just clear the filters, we set all rows to display.
+//If the user clicks on a value, that selection is toggled.
+//
+//console.log("thisFilter checkmark is: " + thisFilter.classList.contains("checkmark"))
+trrows.forEach(function(row) {
+	var option = row.querySelector("option:checked")
+//	console.log("Table Row option is checked? " + parseInt(option.value))
+	//make everything visible
+	if (selectionsOn) {
+		row.style.display='table-row'
+    }
+	//make everything invisible
+    else if (selectionsOff) {
+		row.style.display='none'
+    }
+	//It matches the selected metric and its filter says to display it, so make this row visible 
+	else if ((parseInt(option.value) == <%=@m_id%>) && (thisFilter.classList.contains("checkmark"))) {
+		row.style.display='table-row'
+	}
+	//It matches the selected metric and its filter says to hide it, so make this row in-visible 
+	else if ((parseInt(option.value) == <%=@m_id%>) && !(thisFilter.classList.contains("checkmark"))) {
+		row.style.display='none'
+	}
+});
+//console.log("this is the END " ) 

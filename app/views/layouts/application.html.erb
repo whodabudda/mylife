@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MyLife BioCharting</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="turbolinks-cache-control" content="no-preview" />
+  <%= csrf_meta_tags %>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <%#
+    This is the link to find the icons available at 4.7.  As of 01/24/2022, fa was up to version 5.15 and 
+    there are significant upgrade tasks.  TODO:  download 4.7 fonts so you don't break when they disappear from the web.
+    https://fontawesome.com/v4.7/icons/
+  %>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+ <script type="text/javascript" src="https://www.highcharts.com/samples/data/three-series-1000-points.js"></script> 
+<!--
+  <script src='http://www.google.com/jsapi'></script>;
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+  <script src="http://code.highcharts.com/stock/highstock.js"></script>
+  <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+-->
+  <%#= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%#= stylesheet_pack_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%#= javascript_include_tag 'defaults' %>
+  <%#= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%#= javascript_pack_tag 'application','data-turbolinks-track': 'reload' %>
+  <%#= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %> 
+<!-- = javascript_include_tag 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js', integrity: 'sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1', crossorigin: 'anonymous', defer: true %>
+-->
+<%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+<%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
+  <%#= yield :javascript_includes %>
+  <%if false %>
+    <p class="notice"><%= notice %></p>
+    <p class="alert"><%= alert %></p>
+    <%= javascript_pack_tag "application" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  <% end %>
+</head>
+<body>
+<!-- <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/3.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">Creative Commons Attribution-NonCommercial 3.0 Unported License</a>. 
+-->
+<%= render partial: "shared/navbar_default" %>
+<% if notice %>
+  <p class="alert alert-success"><%= notice %></p>
+<% end %>
+<% if alert %>
+  <p class="alert alert-danger"><%= alert %></p>
+<% end %>
+
+
+<div id="side-content">
+    <%= yield(:side_bar) %>
+</div>
+
+<%= yield %>
+
+<%= render partial: "shared/footer" %>
+<div id="modal-holder"></div>
+<script>
+//    $(document).ready(function () {
+//        $('.dropdown-toggle').dropdown();
+//    });
+</script>
+</body>
+</html>
+

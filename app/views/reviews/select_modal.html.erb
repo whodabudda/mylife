@@ -1,0 +1,39 @@
+
+<%= content_for :'modal-title'  do %>
+   Select Review 
+<%end%>
+<%= content_for :'modal-body'  do %>
+
+<p id="notice"><%= notice %></p>
+
+<h1>Reviews</h1>
+<%# @reviews = Review.all %>
+<table class="thetable">
+  <thead>
+    <tr>
+      <th>Metric</th>
+      <th>Event</th>
+      <th>Start dt</th>
+      <th>End dt</th>
+      <th>Span</th>
+      <th>Significant</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @reviews.each do |review| %>
+      <tr id="tr_review_<%=review.id.to_s%>" >
+        <td><%= review.metric.name %></td>
+        <td><%= review.event.name %></td>
+        <td><%= review.start_dt %></td>
+        <td><%= review.end_dt %></td>
+        <td><%= review.span %></td>
+      	<td><%= review.significant %></td>
+		    <td><%= link_to 'Select', reviews_home_path(id: review.id) %> </td>
+        <td><%= link_to 'Remove', review, method: :delete ,remote: true%></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= link_to 'Back', reviews_home_path %>
+<%end%>

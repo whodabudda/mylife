@@ -1,0 +1,27 @@
+<!-- The sidebar -->
+<div class="sidenav">
+<%  review = local_assigns.fetch(:review, @review) %>
+ 
+  <%Rails.logger.info "review:sidebar persisted: #{@review.persisted?} inspect:  #{@review.inspect}" %>
+  <%#=Rails.logger.info "review_valid:sidebar inspect:  #{@review_valid.inspect}" %>
+
+  <%= render partial: 'form', locals: {review: @review, post_method: @review.valid? ? true : false} %>
+
+  <!--hr class="solid"-->
+
+  <!-- 
+    The "post_review" class is a placeholder for the POST or PATCH form that calls review#create or review#update respectively to save the review to the database.  You can't redirect_to a POST method from a GET method. Apparently that is built into http.  We want the user to be able to play with the fields in the GET form until they come up with something they want to save. Each time they change a field in the GET form, show_regression is called.  When the form passes all its validations, the javascript in show_regression.js.erb will execute and the submit button for the POST/PATCH method will be enabled. The user can then save the valid review.
+  -->
+
+  <!-- 
+      When the review_sidebar is first rendered, there is  no POST form.  If the model was created by selecting a previously saved review, the 'patch' method is used which calls the 'update' action, otherwise a new review via the'post' method and 'create' action is used.
+  -->
+  <div class="saved_reviews">
+  <%= link_to 'Saved Reviews', :reviews_select_modal,data: { remote: true } %> 
+  </div>
+</div>
+
+  <!-- 
+    This link_to method was an experiment in how to get an anchor tag to do a POST/PATCH method. The keys to making it work were to set the review params from a json hash, set the id to "" if there is no id in review, and set the method based on if there is an id or not.  The presence of an id indicates the model variable came from the database.  There were still problems with this approach, and sending the data in a form works better.
+  -->
+  <%#= link_to "Save" , review_path( @review.id.nil? ? "" : @review.id, controller: :review, review: @review.as_json), method: @review.id.nil? ? :post : :patch , data: { turbo: false}%>

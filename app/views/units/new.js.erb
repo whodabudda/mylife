@@ -1,0 +1,24 @@
+//
+//The layout has the framework for the modal. new.html.erb has content_for blocks to provide header and body
+//content, which should make the layout generic for all modals.  You must have a div with modal-holder on the page
+//this is launched from.  Since this is launched from the navbar, which includes the application layout where 
+//modal-holder is defined.  Also note that the template: parm is used with render, meaning that if you give the  
+//path to the view, it will use the full template, not the partial.
+//
+$("#modal-holder").html("<%= escape_javascript(render template: 'units/new',formats: [:html], layout: 'layouts/modal') %>")
+showModal('exampleModal')
+//$('#exampleModal').modal("show")
+
+//
+//Had a great deal of trouble getting both jquery and bootstrap modal function to work. 
+//bootstrap defines the modal function, and somehow attaches it to jquery.
+//It never worked with the ES6 import, but seems to be working now using 'require' for bootstrap
+//Rails doc says not to use ES6 methods with ujs because ujs does not pre-process.  Yeah, that explains so much.
+
+//
+//Here are some troubleshooting things to try if it goes south again.
+//
+//console.log("the element is: " + document.querySelector('#exampleModal'));
+//let mynewmodal = new Modal(document.getElementById('exampleModal'));
+//console.log("mymodal is: " + mynewmodal)
+//mynewmodal.show();

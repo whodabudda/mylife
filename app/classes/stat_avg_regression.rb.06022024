@@ -1,0 +1,76 @@
+
+class StatAvgRegression < StatRegressionBase
+    include StatAssumptions
+    def initialize(review,ss) 
+        super(review,ss)
+    end
+
+    def perform_analysis
+        
+        @chartSeries[:data] = getDataArray
+        setSingleValues
+    end
+
+
+    def checkAssumptions
+        validData? && (linear_regression? || unary_regression?)
+    end
+
+private
+
+def getDataArray
+  #debugger
+  values = []
+  Rails.logger.info "#{self.class.name}:#{__method__} --  dataset size #{dataset.size} "
+  @events = []
+  dataset.each do |rec|
+    if (rec.metric_id == review.event_id) 
+      @events.push rec
+    else
+      values.concat ( formatPoint(rec))    
+    end
+  end
+  #return the array of hashes for the highcharts :data array
+  #Rails.logger.info "#{self.class.name}:#{__method__} -- series data:  #{values} "
+  values
+end
+
+
+    #format the point data for highcharts to use. 
+    #For regressions, the y value is the metric, the x value the event.
+    #All metrics and events have numeric values
+    #return a hash useable by highcharts in its :data array
+
+    #accumulate and average the events within the span window, so instead of a point for
+    #every event, we'll have a point of the event average for every cluster of events 
+    #within the window. 
+def formatPoint(metric)
+  values = []
+  #Rails.logger.info "#{self.class.name}:#{__method__} -- event count: #{@events.length} metric(id,value): #{metric.id},#{metric.value}"
+  cumulative_hrs = 0
+  remove_me = []
+  #@events.each_with_index do |rec,i|
+  # puts "event index: #{i} -> id: #{rec.id}"
+  #end
+  @events.each_with_index do |rec,i|
+    hours = 0
+    hours = ((metric.occur_dttm - rec.occur_dttm)/3600).to_i if rec.metric_id = review.event_id
+    #puts "rec.id: #{rec.id}  hours: #{ hours}  "
+    if hours > @span_hours
+       # puts "adding event #{rec.id} to remove_me list"
+        remove_me.push rec
+    else
+       # puts "adding event #{rec.id} with #{hours} hours"
+
+        cumulative_hrs += hours
+    end
+  end
+  @events = @events - remove_me
+  cumulative_hrs = (cumulative_hrs/@events.length).to_i unless cumulative_hrs < 1
+      
+  #puts "charting values x: #{cumulative_hrs}  y: #{ metric.value} for average of #{@events.length} events  "
+  point = {"id": metric.id, "x": cumulative_hrs, "y": metric.value, "myData": metric.occur_dttm}
+  values.push point
+  return values
+end
+end

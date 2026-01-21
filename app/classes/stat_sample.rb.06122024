@@ -1,0 +1,166 @@
+require 'rserve'
+#base class for the stat inheritance hierarchy.  Provides the raw data for all stat functions.
+class StatSample
+	include ActiveSupport::Rescuable
+	include StatFunctions
+	#rescue_from StandardError, with: :rserve_error
+	attr_accessor :ds, :messages, :x_profile, :y_profile
+	attr_reader :metadata, :dataset, :conn, :assumptions,:x_values, :y_values,:x_occur_dttm, :y_occur_dttm
+
+ def initialize (review,conn)
+ 	@review = review
+ 	@metadata = {}
+  @messages = {}
+  @x_profile = {}
+  @y_profile = {}
+  @x_values = []
+  @y_values = []
+  @x_occur_dttm = []
+  @y_occur_dttm = []
+  #the each element in the assumptions array must be defined as a method.
+  @assumptions = [:isCategorical?, :isLogistical? ,:isInvalid?,:isUnary?,:isNormalDist?,:isContinuous?]
+  #@conn MUST be closed when all the stat objects have done their work.  The only good way is
+  #to enclose the connection in a begin/ensure/end block, which is done in the controller, and
+  #handed to this object.
+ 	@conn = conn
+ 	set_stat_data
+ end
+ def runAssumptions
+ 		@assumptions.each do |ass|
+ 			self.public_send(ass)
+ 		end
+ end
+ def isInvalid?
+  @y_profile[:isInvalid] =  y_values.uniq.length < 2
+  @x_profile[:isInvalid] =  x_values.length == 0
+ end
+ #if the vector is not unary and less than 6 unique values, it is categorical
+ #The limit of 6 unique values is somewhat arbitrary. It affects
+ #the type of visual aid that will be presented.
+ def isCategorical?
+ # @x_profile[:isCategorical] =  (fCategorical? (x_values)) && (!fUnary? (x_values))
+ # @y_profile[:isCategorical] =  (fCategorical? (y_values)) && (!fUnary? (y_values))
+  @x_profile[:isCategorical] =  x_values.uniq.length.between? 2,6 
+  @y_profile[:isCategorical] =  y_values.uniq.length.between? 2,6 
+ end
+ def isLogistical?
+  @y_profile[:isLogistical] =   y_values.uniq.length.between? 2,3  #dependent variable only
+ end
+ def isUnary?
+  @x_profile[:isUnary] =  x_values.uniq.length == 1  #independent variable only
+ end
+ def isContinuous?
+  #neither X nor Y are categorical. Required for standard regression
+  @x_profile[:isContinuous] =  x_values.uniq.length > 6
+  @y_profile[:isContinuous] =  y_values.uniq.length > 6
+ end
+# def isLogistical?
+#  @y_profile[:isLinear] =  fLinear? (y_values)  #dependent variable only
+# end
+
+ 	#execute the tests for normal distribution of the vectors
+ def isNormalDist?
+ 	pv = 0
+  if ! x_profile[:isCategorical] && ! x_profile[:isUnary] && ! x_profile[:isInvalid]
+    pv = perform_normal_dist_test(x_values,"shapiro.test")
+    @x_profile[:isNormalDist] = pv > 0.05 ? true : false
+  else
+    @x_profile[:isNormalDist] = false
+  end
+
+  add_return_message("shapiro.test","#{@x_profile[:isNormalDist]}, p-value for x_values was #{pv}")
+
+ 	pv = 0
+  if ! y_profile[:isCategorical] && ! y_profile[:isInvalid]
+    pv = perform_normal_dist_test(y_values,"shapiro.test")
+    @y_profile[:isNormalDist] = pv > 0.05 ? true : false
+  else
+    @y_profile[:isNormalDist] = false
+  end
+  add_return_message("shapiro.test","#{@y_profile[:isNormalDist]}, p-value for y_values was #{pv}")
+ end
+
+ def isHomoSkedastic?
+   if ! x_profile[:isInvalid]
+    pv = perform_normal_dist_test(x_values,"levenes.test")
+    @x_profile[:isHomoSkedastic] = pv > 0.05 ? true : false
+    add_return_message("levenes.test","#{@x_profile[:isHomoSkedastic]}, p-value for x_values was #{pv}")
+   end
+
+   if ! y_profile[:isInvalid]
+    pv = perform_normal_dist_test(y_values,"levenes.test")
+    @y_profile[:isHomoSkedastic] =  pv > 0.05 ? true : false
+    add_return_message("levenes.test","#{@y_profile[:isHomoSkedastic]}, p-value for y_values was #{pv}")
+   end
+ end
+ #returns an array of the requested column, filtered to contain only the id of the desired metric
+ #Will be useful for objects that need to create vectors to interface with Rserve
+ def get_column(name, id)
+ 	metric_id_idx = metadata["column_names"].index("metric_id") #get index of metric_id column
+ 	col_idx = metadata["column_names"].index(name)              #get index of requested column
+ 	filtered = @ds.map {|row| row if row[metric_id_idx] == id }.compact  #get array of only the requested id
+  Rails.logger.info("#{self.class.name}:#{__method__} -- returning #{filtered.length} rows for parms:[#{''.concat(name,',',id)}]")
+ 	return filtered.map {|row| row[col_idx] }										#return requested column for requested metric
+ end
+
+	#
+	#create class attributes with the DuserMetric data meeting the requirements of the Review object. 
+	#also pluck the 3 attributes that we will use for the statistical functions and set up the metadata
+	#to simplify creation of vectors to use in the R statistics app
+	#
+ def set_stat_data
+ #full ActiveRelation dataset using params from review record
+ 	@dataset = DuserMetric.joins(:metric).for_duser(@review.duser_id).for_series([@review.metric_id, @review.event_id]).where("occur_dttm between ? and ?", @review.start_dt , @review.end_dt ).order(occur_dttm: :asc).select(:id,:occur_dttm,:metric_id,:value,:name)
+ #view of dataset as an Array that will work for most statistical tests
+ 	@ds = @dataset.pluck(:metric_id,:value,:occur_dttm).map { |s| [s[0], s[1], s[2].strftime("%Y-%m-%d %H:%M")]}
+ 	get_meta
+  @x_values = get_x_values
+  @y_values = get_y_values
+  @x_occur_dttm = get_x_occur_dttm
+  @y_occur_dttm = get_y_occur_dttm
+  #Rails.logger.info("#{self.class.name}:#{__method__} -- @y_values: #{@y_values}")
+  #my_tt (1, 2)
+  #remove_outliers (@y_values,'metrics')
+  #remove_outliers (@x_values,"events")
+ end
+
+ def my_tt (p1,p2)
+  p2 = '3'
+  Rails.logger.info("#{self.class.name}:#{__method__} -- params: #{p1} and #{p2}") 
+ end
+private
+ #return the entire plucked dataset
+ #returns a hash with the keys containing the name of each metric in the dataset, its metric id, and the 
+ #array of column_names in the plucked dataset (@ds)
+ #This allows the user to obtain this hash, and use it to access the list of metrics. For example, the 
+ #y_axis metric name can be obtained by @metadata.key(@review.metric_id). This gets the hash item where
+ #the key = name of the y_axis metric. The column_names key returns the array of column name in the 
+ #plucked dataset.  They are in order, so @ds[0] is the metric_id data, @ds[1] the value data, etc.
+ #NOTE: the array has to be 'mapped' to extract the column data, for example:  @ds.map {|rec| rec[0]}
+ #to extact an array of all the first column values
+ # 
+ def get_meta
+ 	@metadata = @dataset.each_with_object({}) do |row, hash|
+	  hash[row[:name]] = row[:metric_id]
+	end
+	@metadata["column_names"] = [:metric_id,:value,:occur_dttm].map(&:to_s)
+	@metadata
+ end
+ #TODO - when we implement multiple regression, we'll have more than one event id.  Will need to change
+ #this to return a hash of arrays, one array of values for each event id
+ #independent variable(s)
+ def get_x_values
+ 	get_column("value",@review.event_id)
+ end
+
+ #always the dependent variable.  We don't support multiples.
+ def get_y_values
+ 	get_column("value",@review.metric_id)
+ end
+ def get_x_occur_dttm
+ 	get_column("occur_dttm",@review.event_id)
+ end
+ def get_y_occur_dttm
+ 	get_column("occur_dttm",@review.metric_id)
+ end
+end #StatSample class

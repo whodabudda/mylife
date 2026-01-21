@@ -1,0 +1,37 @@
+
+    <div class="container-sm">
+      <div class="row">
+         <div id="user-session-table" class="col-md-10"> 
+           <%= render partial: "shared/duser_metric_table" %> 
+          </div>
+       </div>
+     </div>
+     <div class="row">
+
+    <div class="container-sm">
+      <div class="row">
+          <div id="user-session-chart"  class="col-md-10">
+           <%= render partial: "chart" %> 
+          </div>
+      </div>
+    </div>
+<script>
+  // 
+  // Assuming @page holds the page identifier. 
+  // See javascript/mylife/user_session_home.js for the relevant javascript.  Turbolinks doesn't always play well with
+  // load events so we have to resend the turbolinks::load, which triggers the hidden link for showing the chart. But
+  // we show the chart on different pages, so we need to know which page is actually loading.
+  // 
+  var initialPage = "user_session_home"; 
+</script>
+
+    <!--Start of commented code.  Removed the sidebar from the session home page
+    <%if false %> 
+        <div>
+            <a class="btn btn-default btn-xs" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" role="button" aria-controls="offcanvas">
+              <span class="fa fa-caret-right" aria-hidden="true" style="color:blue; font-size: 30px; font-weight: lighter "></span>
+          </a>
+          <%= render partial: "shared/tree_sidebar" %> 
+        </div>
+    <%end%>
+    end of commented code-->

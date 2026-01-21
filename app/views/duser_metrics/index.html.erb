@@ -1,0 +1,26 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Duser Metrics</h1>
+ <div class="well">
+   <%= link_to "New Metric", new_duser_metric_path, remote: true, class: "btn btn-primary" %>
+ </div>
+<!--
+<div class="new-duser-metric"></div>
+-->
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Occur dttm</th>
+      <th>Duser</th>
+      <th>Metric</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+  <tbody class="duser-metric-index">
+    <%= render "index" %>
+  </tbody>
+</table>
+</div>
+<div id="duser-metric-modal" class="modal fade"></div>
+<%#= link_to 'New Duser metric', new_duser_metric_path %>

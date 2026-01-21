@@ -1,0 +1,39 @@
+
+<%   require_dependency('h_s_series_base') %>
+<%   require_dependency('h_s_series_regression') %>
+
+<% if false %>
+<%=  Rails.logger.info "We made it into the show_regression.js.erb file" %>
+<%=  Rails.logger.info "Chart name is: #{ @chart_mgr.chart_title_text} " %>
+<% @review = (@tempreview.nil? ?  @review : @tempreview )%>
+<%  end %>
+
+<%# @chartSeries = (@chartSeries.nil? ?  nil : @chartSeries )%>
+<%#=  Rails.logger.info "ShowRegression.js_erb chartSeries is:  #{ @chartSeries.inspect} " %>
+
+        var reg_series = JSON.parse('<%= raw @chartSeries.write.to_json %>')
+        var reg_series_line = JSON.parse('<%= raw @chartSeries.getRegValues.to_json %>')
+        console.log(reg_series)
+        console.log(reg_series_line)
+        chart1.addSeries(reg_series)
+        chart1.addSeries(reg_series_line)
+        chart1.reflow()
+        //
+        //
+        //document.getElementById("review-info").replaceWith("<%= j ("#{render partial: 'chart_info', locals: {  chartSeries: @chartSeries}}").html_safe %>");
+        document.getElementById("review-info").innerHTML =  ("<%= j ("#{render partial: 'chart_info', locals: {  chartSeries: @chartSeries, chart_active: true }}").html_safe %>")
+        document.getElementById("review-error").innerText = '';
+      <%else%>
+        // document.getElementById("review-error").value = <%#= @chartSeries.error_msg %>;
+         document.getElementById("review-info").innerHTML = '';
+         document.getElementById("review-error").innerText = '<%= @chartSeries.error_msg %>';
+         console.log("changed review-error")
+      <% end %>
+
+    //
+    //adds the series to the chart, along with all series options
+    //the options are different for events vs metrics.  
+    //Events are charted as STD DEV points in a scatter graph, but the actual values are 
+    //included as data and displayed in the Tooltip
+    //
+

@@ -1,0 +1,116 @@
+  
+
+        <!--div class="col-md-8" id="createnewmetricform"--> 
+          <%= form_tag({ :controller => "duser_metrics", :action => "save_duser_metric_table"},{ :method => "patch"} ) do %>  
+
+
+                <table id="thetable" class="thetable">  <!-- style in user_session.scss -->
+                <thead>
+                <tr>
+                  <th> Metric </th>
+                  <th> Value </th>
+                  <th> Units </th>
+                  <th> Datetime </th>
+                  <th> Del </th>
+                  <th> Edit </th>
+                  <th> Copy </th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--
+                  If there are no metrics charted, add an empty one to get started.
+                -->
+                <% for duser_metric in @displayed_series %>  
+                  <%= render partial: "shared/duser_metric_tr", locals: {duser_metric: duser_metric} %> 
+                <% end %>  
+                </tbody>
+                <tfoot >
+                  <tr><td colspan=7 align="center">End of listing </td></tr>
+                </tfoot>
+                </table>
+<style type="text/css">
+  
+.checkmark  {
+  font-style: italic;
+  font-size: smaller;
+  color: green; 
+}
+.checkmark:after {
+    content: '\2713';
+    color: green;
+    padding: 5px;
+}
+ .list-group{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: 1000px;
+  }
+
+  .list-group-item{
+    min-width: 50px;
+  }
+  .fa-caret-down{
+   font-size: 10;
+   color:blue;
+   font-weight: lighter 
+  }
+</style>                
+
+
+                     <div  align="center" width="auto">
+                     <%= submit_tag "Refresh Chart" , class: "btn btn-default" %>
+                      <a class="btn btn-default btn-xs "  role="button" data-bs-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample" >
+                        Filter Metrics
+                       <span class="fa fa-caret-down" aria-hidden="true"></span>
+                      </a>
+                          <div class="collapse" id="collapseExample" >
+                          <ul class="list-group list-group-horizontal" >
+                            <%
+                              metric_ids = @displayed_series.map { |m| m.metric_id }
+                              metric_ids = metric_ids.uniq
+                             for m_id in metric_ids 
+                             %>  
+                            <li>
+                              <%= link_to Metric.find(m_id).name,  { id: m_id, remote: true, controller:"duser_metrics" , action: "filter_table_rows" } , {class: "list-group-item border-0 checkmark toggle_metric", id: "toggle_metric_" + m_id.to_s } %>
+                              </li>
+                            <%end%>
+                            <li>
+                              <a class="list-group-item border-0 checkmark toggle_metric" id="toggle_metric_0" data-remote="true" href="/duser_metrics/filter_table_rows?id=0">Show All</a>
+                              </li>
+                            <li>
+                            <li>
+                              <a class="list-group-item border-0 checkmark toggle_metric" id="toggle_metric_-1" data-remote="true" href="/duser_metrics/filter_table_rows?id=-1">Hide All</a>
+                              </li>
+                            <li>
+                          </ul>
+                          </div> <!-- end of collapse class-->
+
+                   </div> <!-- end of align-->
+      <% end #end of form %>  
+
+<div id="duser-metric-modal" class="modal fade"></div>
+
+              <%# if @displayed_series.none? %>
+              <%#=  link_to 'my_link', :new_duser_metric , remote: true ,hidden: true, id: "salt-row-for-new-user" %>
+              <%#  #controller.redirect_to :new_duser_metric, remote: true, modal: true%>
+              <%# end %>
+
+              <!-- The following creates a dropdown button with select options
+                        The options are taken from the @m collection. The first 2 options are the 
+                        name of the object (metric) and the column in the object (id) to set in the 
+                        select tag attributes as name="metric[id]" and id="metric_id".  This is added to 
+                        the url as a parameter for the Ajax call to "filter_table_rows".  This in turn 
+                        will either display or hide the rows in the table.  Purpose is to help the user
+                        see the data in the table by grouping entries of a selected type together.
+
+                    01/22/24 Replaced the dropdown list with the collapsable list group. The list group
+                    shows well horizontally and is a little more flexible than the dropdown list.  Kept this 
+                    collection_select code around for reference, since it was originally difficult to work out.
+                    -->
+
+                   <%# @m = Metric.where( " duser_id = 1 or duser_id = ?", current_duser.id ) %>
+                   <%#= collection_select(:metric,:id,@m, :id, :name,{include_blank: 'Clear Filter'}, 
+                     { :data => { remote: true, :url => url_for(:controller => "duser_metrics", :action => "filter_table_rows") },multiple: false }
+                     )
+                   %>

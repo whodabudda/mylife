@@ -1,0 +1,47 @@
+<%= form_for(@metric , remote: true) do |f| %>
+  <% if @metric.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@metric.errors.count, "error") %> prohibited this metric from being saved:</h2>
+
+      <ul>
+      <% @metric.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
+  <div class="field">
+    <%= f.label :duser_id, "For user id: #{@metric.duser_id} and user name: #{@metric.duser.username }" %><br>
+    <%= f.text_field :duser_id, value: current_duser.id, readonly: true,hidden: true%>
+  </div>
+  <div class="field">
+    <%= f.label :name %><br>
+    <%= f.text_field :name, required: true , autocomplete: "off"%>
+  </div>
+  <div class="field">
+    <%= f.label :description %><br>
+    <%= f.text_field :description %>
+  </div>
+  <div class="field">
+    <%= f.label :series_color %><br>
+    <%= f.text_field :series_color, type: :color %>
+  </div>
+  <div class="field">
+    <%= f.label :visible %><br>
+    <%= f.check_box :visible %>
+  </div>
+  <div class="field">
+    <%= f.label :unit_id %><br>
+    <% @m = Unit.where( " duser_id = 1 or duser_id = ?", current_duser.id ) %>
+    <%=f.collection_select(:unit_id, @m, :id, :name, required: true) %>
+  </div>
+  <div class="field">
+    <%= f.label :series_type %><br>
+    <%= f.select :series_type, options_for_select([['Select', nil], ['metric', 'metric'], ['event', 'event']],"#{@metric.persisted? ? @metric.series_type : 'Select'}" ), { prompt: 'Select the metric type' }, required: true %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
